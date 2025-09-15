@@ -4,21 +4,20 @@
 """
 rotate_adsorbate.py
 
-Generate rotated configurations of a molecule/protein using Euler angles (ZYZ). 
-Supports multiple sampling modes:
-- grid      : open intervals, midpoints
+Generate rotated configurations of a molecule/protein using ZYZ Euler angles.
+Sampling modes:
+- grid      : open intervals (midpoints)
 - grid_2    : endpoints included
-- grid_lhs  : Latin Hypercube stratified sampling (exact nrot)
 - random    : Haar-like random sampling
 
 Outputs:
-- An XYZ trajectory file with rotated coordinates.
-- A 'data.dat' file with the angles (theta, phi, psi) used.
+- XYZ trajectory file with rotated coordinates
+- 'data.dat' with the angles used (theta, phi, psi)
 
 Dependencies:
 - numpy, scipy, matplotlib
 
-Example usage:
+Example:
     python rotate_adsorbate.py --input protein.xyz --mode grid_lhs --nrot 100
 """
 
@@ -38,7 +37,7 @@ import os
 
 def ask_positive_int(prompt: str) -> int:
     """
-    Keep asking until the user provides a positive integer (>0).
+    Prompt until the user provides a positive integer (> 0).
     """
     while True:
         try:
@@ -52,7 +51,7 @@ def ask_positive_int(prompt: str) -> int:
 
 def ask_mode() -> str:
     """
-    Keep asking until the user provides a valid mode.
+    Prompt until the user provides a valid mode.
     Valid options: 'grid' or 'random'.
     """
     while True:
@@ -290,7 +289,7 @@ def adsorbate_rot(
         # φ, ψ ∈ [0, 2π) (include 0, exclude 2π to avoid duplicates)
         ###################################################
         print('\n............................................')
-        print('\nmethod used: grid_2 (endpoints included)')
+        print('method used: grid_2 (endpoints included)')
         print(f"grid_2: divisions = ntheta={ntheta}, nphi={nphi}, npsi={npsi}")
         print('............................................\n')
 
@@ -345,7 +344,7 @@ def adsorbate_rot(
         # θ ∈ [0, π),  φ ∈ [0, 2π),  ψ ∈ [0, 2π)
         ##########################################################
         print('\n............................................')
-        print('\nmethod used: random (Haar-like sampling)')
+        print('method used: random (Haar-like sampling)')
         print('............................................\n')
         
         seed = 0
@@ -415,10 +414,12 @@ def adsorbate_rot(
                            f"{yrot[iu]:10.4f}"
                            f"{zrot[iu]:10.4f}\n")
             irot += 1
+    
     print('n rotations generated =', irot)
     print(f"XYZ file saved as: {xyz_output_filename}")
     print("angles saved in: data.dat\n")
     print('............................................\n')
+    
     
     #########################################################
     # Save angles used for plotting on the sphere
@@ -529,7 +530,7 @@ def angles_to_sphere_points():
 ########################################################
 ########################################################
 
-input_filename = input("Nombre del archivo XYZ (ej: protein.xyz): ").strip()
+input_filename = input("Name of the file XYZ (ej: protein.xyz): ").strip()
 
 if not os.path.isfile(input_filename):
     print(f"[Error]: file '{input_filename}' was not found.")
