@@ -202,8 +202,7 @@ def adsorbate_rot(
     """
     # defs:
     pi = math.pi    
-    rng = np.random.default_rng(seed=0) # random number generator
-    
+        
     ####################################
     # Centered coordinates (one-time shift)
     ####################################
@@ -231,21 +230,24 @@ def adsorbate_rot(
         # Sampling with midpoints (open intervals):
         # cos(theta) ∈ (-1, 1),  phi ∈ (0, 2π),  psi ∈ (0, 2π)
         ###################################################
-        print('method used: grid')
+        print('\n............................................')
+        print('method used: grid (midpoints, open intervals)')
+        print(f"grid: divisions = ntheta={ntheta}, nphi={nphi}, npsi={npsi}")
+        print('............................................\n')
         
         # require all grid sizes:
         if None in (ntheta, nphi, npsi):
-            print("grid: missing parameters (ntheta/nphi/npsi). Doing nothing.")
+            print("[grid][abort]: missing nθ/nφ/nψ")
             return
         
         # warning if nx are < 1:
         if ntheta <= 0 or nphi <= 0 or npsi <= 0:
-            print("grid: all ntheta/nphi/npsi must be > 0.")
+            print("[grid][abort]: all nθ/nφ/nψ must be > 0")
             return
             
         # warning if theta sampling is too coarse:
         if ntheta < 10:
-            print("grid: warning — coarse sampling in cos(theta); results may be biased.")
+            print("[grid][warn ]: coarse sampling in cosθ; results may be biased")
         
         # empty list to store angles:
         triplet_list = []
@@ -277,16 +279,6 @@ def adsorbate_rot(
             for phi in phi_list:
                 for psi in psi_list:
                     triplet_list.append((theta, phi, psi))
-        
-        length = len(triplet_list)
-        print(length, 'rotations will be generated')
-
-        unique_theta_exact = count_unique_angles(theta_list, decimals=None)
-        unique_phi_exact   = count_unique_angles(phi_list, decimals=None)
-        unique_psi_exact   = count_unique_angles(psi_list, decimals=None)
-        print(f"unique θ count: {unique_theta_exact}")
-        print(f"unique φ count: {unique_phi_exact}")
-        print(f"unique ψ count: {unique_psi_exact}")
                 
         # visualize angles:
         plot_three_angles(theta_list, phi_list, psi_list, filename=f"angles_three_{mode}.png")
@@ -297,7 +289,10 @@ def adsorbate_rot(
         # cosθ ∈ [-1, 1] (includes ±1)  → θ = arccos(cosθ)
         # φ, ψ ∈ [0, 2π) (include 0, exclude 2π to avoid duplicates)
         ###################################################
-        print('method used: grid_2 (with endpoints)')
+        print('\n............................................')
+        print('\nmethod used: grid_2 (endpoints included)')
+        print(f"grid_2: divisions = ntheta={ntheta}, nphi={nphi}, npsi={npsi}")
+        print('............................................\n')
 
         if None in (ntheta, nphi, npsi):
             print("grid_2: missing parameters (ntheta/nphi/npsi). Doing nothing.")
@@ -341,9 +336,6 @@ def adsorbate_rot(
                 for psi in psi_list:
                     triplet_list.append((theta, phi, psi))  # triple of angles to generate rotations
         
-        length = len(triplet_list)
-        print(length, 'rotations will be generated (grid_2)')
-
         # visualize angles:
         plot_three_angles(theta_list, phi_list, psi_list, filename=f"angles_three_{mode}.png")
                 
@@ -352,11 +344,17 @@ def adsorbate_rot(
         # Haar-like sampling via independent ZYZ parameters:
         # θ ∈ [0, π),  φ ∈ [0, 2π),  ψ ∈ [0, 2π)
         ##########################################################
-        print('method used: random')
+        print('\n............................................')
+        print('\nmethod used: random (Haar-like sampling)')
+        print('............................................\n')
+        
+        seed = 0
+        rng  = np.random.default_rng(seed) # random number generator
+        print(f"random: RNG seed = {seed}")
         
         # warning if nrot < 1:
         if (nrot is None) or (nrot < 1):
-            print("random: 'nrot' must be > 0. Doing nothing.")
+            print("[random][abort]: 'nrot' must be > 0")
             return
         
         # empty list to store angles:
@@ -375,26 +373,29 @@ def adsorbate_rot(
             
             # append:
             triplet_list.append((theta, phi, psi))
-            
-        length = len(triplet_list)
-        print(length, 'rotations will be generated')
-        
+                
         # plot:
         theta_list = [t[0] for t in triplet_list]
         phi_list   = [t[1] for t in triplet_list]
         psi_list   = [t[2] for t in triplet_list]
-        
-        unique_theta_exact = count_unique_angles(theta_list, decimals=None)
-        unique_phi_exact   = count_unique_angles(phi_list, decimals=None)
-        unique_psi_exact   = count_unique_angles(psi_list, decimals=None)
-        print(f"unique θ count: {unique_theta_exact}")
-        print(f"unique φ count: {unique_phi_exact}")
-        print(f"unique ψ count: {unique_psi_exact}")
-                
+                        
         plot_three_angles(theta_list, phi_list, psi_list, filename=f"angles_three_{mode}.png")
         
     else:
         raise ValueError("mode must be one of {'grid', 'grid_2', 'random'}.")
+    
+    
+    # calculate lenght:
+    length = len(triplet_list)
+    unique_theta_exact = count_unique_angles(theta_list, decimals=None)
+    unique_phi_exact   = count_unique_angles(phi_list, decimals=None)
+    unique_psi_exact   = count_unique_angles(psi_list, decimals=None)
+    
+    print(f"total rotations to generate: {length}")
+    print(f"unique θ values = {unique_theta_exact}")
+    print(f"unique φ values = {unique_phi_exact}")
+    print(f"unique ψ values = {unique_psi_exact}")
+    print('............................................\n')
     
     #########################################################
     # Apply rotations (one per triplet) and write XYZ
@@ -414,7 +415,10 @@ def adsorbate_rot(
                            f"{yrot[iu]:10.4f}"
                            f"{zrot[iu]:10.4f}\n")
             irot += 1
-    print('n rotations =', irot, ' are generated')
+    print('n rotations generated =', irot)
+    print(f"XYZ file saved as: {xyz_output_filename}")
+    print("angles saved in: data.dat\n")
+    print('............................................\n')
     
     #########################################################
     # Save angles used for plotting on the sphere
