@@ -57,7 +57,7 @@ The rotation of a protein (or any molecule) can be expressed as the orientation 
 In spherical coordinates, this vector is defined by the polar angle $\theta$ and the azimuthal angle $\phi$ so:
 
 $$
-\hat r = (\sin\theta \cos\phi , \sin\theta \sin\phi , \cos\theta),
+\hat r = \left(\sin\theta \cos\phi , \sin\theta \sin\phi , \cos\theta \right) ;
 \qquad 0 \leq \theta \leq \pi , 0 \leq \phi < 2\pi
 $$
 
@@ -87,8 +87,8 @@ Thus, a random orientation in 3D is obtained by sampling:
 
 $$
 \begin{aligned}
-\cos \theta &\in [-1, 1], \\
-\phi &\in [0, 2\pi), \\
+\cos \theta &\in [-1, 1] \\
+\phi &\in [0, 2\pi) \\
 \psi &\in [0, 2\pi)
 \end{aligned}
 $$
@@ -107,7 +107,7 @@ Run the script:
 python rotate_adsorbate.py
 
 The script will ask for:
-- protein name: e.g. protein.xyz  (coarce-grained of a protein in this version)
+- protein name: $\textit{e.g.}$ protein.xyz  (coarce-grained of a protein in this version)
 - mode: e.g. random or grid (more models can be seted)
 - nrot for random or (ntheta, nphi, npsi) for grid
 
