@@ -104,7 +104,7 @@ $$
 
 Run the script:
 
-`python rotate_adsorbate.py`
+`python3 rotate_adsorbate.py`
 
 The script will ask for:
 - protein name: $\textit{e.g.}$ protein.xyz  (coarce-grained of a protein in this version)
@@ -122,11 +122,11 @@ The script will ask for:
 
 ## Examples results
 
-The script will generate one of the following results in Figure 1.
-Panel A shows the distribution of orientations using random sampling with $n_{\text{rot}} = 1000$.
-Each dot represents a direction on the unit sphere, defined by the polar angle $\theta$ and the azimuthal angle $\phi$.
-It should be noted that $\psi$ angle is distributed similar to $\psi$.
-The uniform spread of points across the sphere demonstrates isotropic sampling of orientations.
+Figure 1 illustrates the possible outputs of the script.  
+**Panel A** shows the distribution of orientations obtained by random sampling with $n_{\text{rot}} = 1000$.  
+Each dot corresponds to a direction on the unit sphere, defined by the polar angle $\theta$ and the azimuthal angle $\phi$.  
+The third Euler angle, $\psi$, follows a distribution analogous to $\phi$.  
+The uniform spread of points across the sphere confirms isotropic sampling of orientations.
 
 
 <p align="center">
@@ -134,7 +134,8 @@ The uniform spread of points across the sphere demonstrates isotropic sampling o
   <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/>
 </p>
 
-**Figure 1.** Sampling of orientations on the unit sphere).
+Figure 1. Sampling of orientations on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$.
+
 
 On the other hand, panel B shows the distribution using grid sampling with $n_{\theta}$ = 20, $n_{\phi}$ = 10, and $n_{\psi}$ = 10.
 The figure shows a uniform distribution of the angles on the surface.
