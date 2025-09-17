@@ -13,3 +13,15 @@ Soporta muestreos por grilla o aleatorios y guarda tanto las coordenadas como lo
 Instalación rápida:
 ```bash
 pip install numpy scipy matplotlib
+
+
+## Resultados
+
+
+### Puntos sobre la esfera
+![Puntos en la esfera](figures/sphere_points_grid.png)
+
+
+### Distribución de ángulos (θ, φ, ψ)
+![Distribución de ángulos](figures/angles_three_grid.png)
+
