@@ -359,6 +359,7 @@ def adsorbate_rot(
             
             # theta:
             theta = np.arccos(2.0*u1 - 1.0)   # get cosθ ~ U[-1,1)
+            #theta = u1*pi   # get cosθ ~ U[-1,1)
             
             # phi and psi (the same for both):
             phi   = 2.0*pi*u2                 # U[0,2π)

@@ -54,30 +54,33 @@ This tool is useful for molecular simulations, protein orientation studies, and 
 
 Here, we justify the range of the angle in order to sample rotation of protein.
 
-The rotation of a protein (or any molecule) can be represented as the orientation of a unit vector $\hat r$ on the unit sphere ($R = 1$).  
-In spherical coordinates:
+The rotation of a protein (or any molecule) can be expressed as the orientation of a unit vector $\hat r$.  
+In spherical coordinates, this vector is defined by the polar angle $\theta$ and the azimuthal angle $\phi$:
 
 $$
-\hat r = (\sin\theta\cos\phi,\; \sin\theta\sin\phi,\; \cos\theta),
-\quad 0 \leq \theta \leq \pi,\; 0 \leq \phi < 2\pi.
+\hat r = (\sin\theta \cos\phi,\; \sin\theta \sin\phi,\; \cos\theta),
+\qquad 0 \leq \theta \leq \pi,\; 0 \leq \phi < 2\pi.
 $$
 
-The corresponding surface element is:
+The corresponding surface element on the unit sphere is:
 
 $$
-dS = \sin\theta \, d\theta \, d\phi.
+dS = \sin\theta d\theta d\phi.
 $$
 
-Integrating over the entire sphere:
+Integrating this surface element over the full ranges of $\theta$ and $\phi$ covers the entire sphere,  
+which corresponds to sampling all possible orientations:
+
 
 $$
-S = \int_{0}^{\pi} \int_{0}^{2\pi} \sin\theta \, d\theta \, d\phi.
+S = \int_{0}^{\pi} \int_{0}^{2\pi} \sin\theta d\theta d\phi.
 $$
 
-With substitution $u = \cos\theta$:
+Using the relationship $-d\cos\theta = \sin\theta d\theta$ and inverting the range of integration (from $-\pi$ to $\pi$),
+we obtain:
 
 $$
-S = \int_{-1}^{1} \int_{0}^{2\pi} du \, d\phi.
+S = \int_{-1}^{1} \int_{0}^{2\pi} d(\cos\theta) d\phi.
 $$
 
 This formulation shows that **uniform sampling in $\cos\theta$ and $\phi$ is required** to generate an unbiased distribution of orientations.  
