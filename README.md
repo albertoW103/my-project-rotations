@@ -10,12 +10,8 @@ Soporta muestreos por grilla o aleatorios y guarda tanto las coordenadas como lo
 - Python 3.8+
 - `numpy`, `scipy`, `matplotlib`
 
-Instalación rápida:
-```bash
-pip install numpy scipy matplotlib
 
-
-### Results
+## Results
 
 - **Modes**: `grid` (midpoints), `grid_2` (endpoints), `random` (Haar-like)
 - **Outputs**: XYZ trajectory with rotated coordinates + `data.dat` (θ, φ, ψ)
