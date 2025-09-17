@@ -273,7 +273,7 @@ def plot_angles_3x2(axes_3x2, costheta, phi, psi, cos2theta,
 # =========================================================
 # Main
 # =========================================================
-input_xyz = 'protein_nrot-0_grid_lhs.xyz'
+input_xyz = 'protein_nrot-1000_random.xyz'
 frames = get_blocks_proteins(input_xyz)
 n1, n2, n3 = 128, 363, 200
 
