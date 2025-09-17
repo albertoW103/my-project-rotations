@@ -24,7 +24,7 @@ python rotate_adsorbate.py
 
 The following figure shows the angle theta and phi that describe a vector on the surface of an sphere.
 
-![Puntos en la esfera](figures/sphere_points_random.png)
+![Puntos en la esfera](figures/angles_three_random.png)
 
 As we can see, distribution is unifor on the sphere.
 
