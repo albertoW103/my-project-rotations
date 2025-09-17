@@ -122,11 +122,7 @@ The script will ask for:
 
 ## Examples results
 
-Figure 1 illustrates the possible outputs of the script.  
-**Panel A** shows the distribution of orientations obtained by random sampling with $n_{\text{rot}} = 1000$.  
-Each dot corresponds to a direction on the unit sphere, defined by the polar angle $\theta$ and the azimuthal angle $\phi$.  
-The third Euler angle, $\psi$, follows a distribution analogous to $\phi$.  
-The uniform spread of points across the sphere confirms isotropic sampling of orientations.
+Figure 1 illustrates the possible outputs of the script. **Panel A** shows the distribution of orientations obtained by random sampling with $n_{\text{rot}} = 1000$. Each dot corresponds to a direction on the unit sphere, defined by the polar angle $\theta$ and the azimuthal angle $\phi$. The third Euler angle, $\psi$, follows a distribution analogous to $\phi$. The uniform spread of points across the sphere confirms isotropic sampling of orientations.
 
 
 <p align="center">
