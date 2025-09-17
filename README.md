@@ -77,7 +77,6 @@ $$
 
 Run the script:
 
-```bash
 python rotate_adsorbate.py
 
 The script will ask for:
