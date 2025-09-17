@@ -73,10 +73,11 @@ def count_unique_angles(angles, decimals=None):
     return np.unique(arr).size
 
 
-def plot_three_angles(theta_list, phi_list, psi_list, radius=2*np.pi, filename=None):
+def plot_three_angles(theta_list, phi_list, psi_list, filename):
     """
     Una sola figura con 3 subplots (θ, φ, ψ) dibujados como flechas en el círculo.
     """
+    radius = 2*np.pi
     def draw(ax, angles, title):
         ang = np.asarray(angles, float) % (2*np.pi)
         t = np.linspace(0, 2*np.pi, 400)
@@ -95,9 +96,8 @@ def plot_three_angles(theta_list, phi_list, psi_list, radius=2*np.pi, filename=N
     draw(axs[0], theta_list, "θ (theta)")
     draw(axs[1], phi_list,   "φ (phi)")
     draw(axs[2], psi_list,   "ψ (psi)")
-
-    if filename:
-        fig.savefig(filename, dpi=300)
+    
+    fig.savefig(filename, dpi=300)
     plt.close(fig)
     
 
@@ -278,9 +278,6 @@ def adsorbate_rot(
             for phi in phi_list:
                 for psi in psi_list:
                     triplet_list.append((theta, phi, psi))
-                
-        # visualize angles:
-        plot_three_angles(theta_list, phi_list, psi_list, filename=f"angles_three_{mode}.png")
 
     elif mode == "grid_2":
         ###################################################
@@ -334,9 +331,6 @@ def adsorbate_rot(
             for phi in phi_list:
                 for psi in psi_list:
                     triplet_list.append((theta, phi, psi))  # triple of angles to generate rotations
-        
-        # visualize angles:
-        plot_three_angles(theta_list, phi_list, psi_list, filename=f"angles_three_{mode}.png")
                 
     elif mode == 'random':
         ##########################################################
@@ -377,9 +371,7 @@ def adsorbate_rot(
         theta_list = [t[0] for t in triplet_list]
         phi_list   = [t[1] for t in triplet_list]
         psi_list   = [t[2] for t in triplet_list]
-                        
-        plot_three_angles(theta_list, phi_list, psi_list, filename=f"angles_three_{mode}.png")
-        
+                                
     else:
         raise ValueError("mode must be one of {'grid', 'grid_2', 'random'}.")
     
@@ -420,6 +412,9 @@ def adsorbate_rot(
     print("angles saved in: data.dat\n")
     print('............................................\n')
     
+    # visualize angles:
+    filename = f"angles_three_nrot-{irot}_{mode}.png"
+    plot_three_angles(theta_list, phi_list, psi_list, filename)
     
     #########################################################
     # Save angles used for plotting on the sphere
@@ -524,8 +519,8 @@ def angles_to_sphere_points(filename):
     ax.set_xlim(-1,1); ax.set_ylim(-1,1); ax.set_zlim(-1,1)
     ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
     ax.set_title("Points on sphere (θ, φ)")
-    plt.show()
     fig.savefig(filename, dpi=300)
+    plt.show()
 
 
 ########################################################

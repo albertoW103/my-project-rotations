@@ -11,6 +11,11 @@ This tool is useful for molecular simulations, protein orientation studies, and 
 - Dependencies: `numpy`, `scipy`, `matplotlib`
 
 
+
+
+
+
+
 ## Results
 
 - **Modes**:  
@@ -22,15 +27,22 @@ This tool is useful for molecular simulations, protein orientation studies, and 
   - XYZ trajectory with rotated coordinates  
   - `data.dat` file containing the angles (θ, φ, ψ)  
 
-- **Figures**:  
-  - Angle distributions  
-  - Sampling preview on the unit sphere  
+- **Figures**:
+  - Angle distributions
+  - Sampling preview on the unit sphere
 
----
+
+
+
+
+
+
 
 ## Uniform sampling of 3D rotations
 
-The rotation of a protein can be represented as the orientation of a unit vector $\hat r$ on the unit sphere ($R = 1$).  
+Here, we justify the range of the angle in order to sample rotation of protein.
+
+The rotation of a protein (or any molecule) can be represented as the orientation of a unit vector $\hat r$ on the unit sphere ($R = 1$).  
 In spherical coordinates:
 
 $$
@@ -70,6 +82,12 @@ $$
 $$
 
 
+
+
+
+
+
+
 ## Quick start
 
 Run the script:
@@ -77,9 +95,13 @@ Run the script:
 python rotate_adsorbate.py
 
 The script will ask for:
-- protein name: e.g. protein.xyz 
-- mode: e.g. random or grid
+- protein name: e.g. protein.xyz  (coarce-grained of a protein in this version)
+- mode: e.g. random or grid (more models can be seted)
 - nrot for random or (ntheta, nphi, npsi) for grid
+
+
+
+
 
 
 ## Examples results
@@ -104,11 +126,24 @@ On the other hand, the script plot the angles in 2D plot, in order to visualize 
 The example is shows in grid sampling with with $n_{\theta}$ = 20, $n_{\phi}$ = 10, and $n_{\psi}$ = 10.
 
 
-![Distribución de ángulos](figures/angles_three_grid.png)
+![Distribución de ángulos](figures/angles_three_nrot-4000_grid.png)
 **Figure 2.** Employed angled to rotate the protein.
 
 
 It shoud be noted here, that the a random samplign cover a wide range of angles than grid, however a grid sampling offer a uniform sampling,
+
+
+## Optional
+
+If the system is
+
+
+
+
+
+
+
+
 
 
 ## Optional
@@ -125,3 +160,7 @@ The figure below shows the distribution of these angle values in a histogram rep
 
 This representation helps determine the sufficient number of rotations required for the system under investigation.  
 Ideally, the distribution should be close to 0.5 for each configuration.
+
+
+
+
