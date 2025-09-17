@@ -104,7 +104,7 @@ $$
 
 Run the script:
 
-python rotate_adsorbate.py
+'python rotate_adsorbate.py'
 
 The script will ask for:
 - protein name: $\textit{e.g.}$ protein.xyz  (coarce-grained of a protein in this version)
