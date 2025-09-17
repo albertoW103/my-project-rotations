@@ -98,23 +98,25 @@ The uniform spread of points across the sphere demonstrates isotropic sampling o
 | -------------------------------------------------------- | ---------------------------------------------------- |
 | ![Random](figures/angles_to_sphere_nrot-1000_random.png) | ![Grid](figures/angles_to_sphere_nrot-4000_grid.png) |
 
-On the other hand, panel B shows the distribution using grid sampling with $\n_{\theta}$ = 20, $\n_{\phi}$ = 10, and $\n_{\psi}$ = 10.
+On the other hand, panel B shows the distribution using grid sampling with $n_{\theta}$ = 20, $n_{\phi}$ = 10, and $n_{\psi}$ = 10.
 The figure shows a uniform distribution of the angles on the surface.
 
 
 On the other hand, the script plot the angles in 2D plot, in order to visualize the extension and distribution of the three applied angles.
-The example is shows in grid sampling with with $\n_{\theta}$ = 20, $\n_{\phi}$ = 10, and $\n_{\psi}$ = 10.
+The example is shows in grid sampling with with $n_{\theta}$ = 20, $n_{\phi}$ = 10, and $n_{\psi}$ = 10.
 
 ![Distribución de ángulos](figures/angles_three_grid.png)
 
 It shoud be noted here, that the a random samplign cover a wide range of angles than grid, however a grid sampling offer a uniform sampling,
 
+
 ## Optional
 
-Additional, from rotate protein file, employing the script 'plot_histo_v6.py', we can calculated  $\n_{\theta}$,  $\n_{\phi}$, and  $\n_{\psi}$ for each generated configuration.
-The following figure show the distribution of the angles values with a histogram representation.
+Additionally, using the script `plot_histo_v6.py` applied to the rotated protein file,  
+we can calculate $n_{\theta}$, $n_{\phi}$, and $n_{\psi}$ for each generated configuration.  
+The figure below shows the distribution of these angle values in a histogram representation.
 
-![Distribución de ángulos](figures/histos_3x2.png)
+![Angle distributions](figures/histos_3x2.png)
 
-This reprentation help to decide the enought amount of notations for the system under investigation.
-Ideally, the distribution must be aorund of 0.5 for each configuration.
+This representation helps determine the sufficient number of rotations required for the system under investigation.  
+Ideally, the distribution should be close to 0.5 for each configuration.

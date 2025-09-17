@@ -97,7 +97,7 @@ def plot_three_angles(theta_list, phi_list, psi_list, radius=2*np.pi, filename=N
     draw(axs[2], psi_list,   "ψ (psi)")
 
     if filename:
-        fig.savefig(filename, dpi=200, bbox_inches="tight")
+        fig.savefig(filename, dpi=300)
     plt.close(fig)
     
 
@@ -525,7 +525,7 @@ def angles_to_sphere_points(filename):
     ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
     ax.set_title("Points on sphere (θ, φ)")
     plt.show()
-    fig.savefig(filename, dpi=300, bbox_inches="tight")
+    fig.savefig(filename, dpi=300)
 
 
 ########################################################
