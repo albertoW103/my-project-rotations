@@ -31,7 +31,7 @@ This tool is useful for molecular simulations, protein orientation studies, and 
   - `grid` → sampling using midpoints (open intervals)  
   - `grid_2` → sampling including endpoints
   - `random` → Haar-like random sampling  
-- **Optional parameters**: number of divisions (`n$_{\theta}$`, `n$_{\phi}$`, `n$_{\psi}$`) or total number of rotations (`nrot`).
+- **Optional parameters**: number of divisions (`nθ`, `nφ`, `nψ`) or total number of rotations (`nrot`).
 
 
 ### Outputs
