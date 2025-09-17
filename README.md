@@ -113,6 +113,12 @@ It should be noted that $\psi$ angle is distributed similar to $\psi$.
 The uniform spread of points across the sphere demonstrates isotropic sampling of orientations.
 
 
+<p align="center">
+  <img src="figures/angles_to_sphere_nrot-1000_random.png" alt="Random" width="45%"/>
+  <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/>
+</p>
+
+
 | Random                                                   | Grid                                                 |
 | -------------------------------------------------------- | ---------------------------------------------------- |
 | ![Random](figures/angles_to_sphere_nrot-1000_random.png) | ![Grid](figures/angles_to_sphere_nrot-4000_grid.png) |
