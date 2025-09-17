@@ -7,8 +7,15 @@ This tool is useful for molecular simulations, protein orientation studies, and 
 
 ## Requirements
 
-- Python 3.8+
-- Dependencies: `numpy`, `scipy`, `matplotlib`
+- Python 3.8+  
+- Dependencies:
+  - `math` (standard library)  
+  - `numpy`  
+  - `scipy` (specifically `scipy.spatial.transform.Rotation`)  
+  - `matplotlib`  
+  - `argparse` (standard library)  
+  - `sys` (standard library)  
+  - `os` (standard library)  
 
 
 
@@ -16,21 +23,26 @@ This tool is useful for molecular simulations, protein orientation studies, and 
 
 
 
-## Results
+## Inputs and Outputs
 
-- **Modes**:  
-  - `grid` → midpoints (open intervals)  
-  - `grid_2` → endpoints included  
+### Inputs
+- **XYZ file**: molecular structure to be rotated (typically coarse-grained).  
+- **Mode selection**:  
+  - `grid` → sampling using midpoints (open intervals)  
+  - `grid_2` → sampling including endpoints
   - `random` → Haar-like random sampling  
+- **Optional parameters**: number of divisions (`nθ`, `nφ`, `nψ`) or total number of rotations (`nrot`).
 
-- **Outputs**:  
-  - XYZ trajectory with rotated coordinates  
-  - `data.dat` file containing the angles (θ, φ, ψ)  
+---
 
-- **Figures**:
-  - Angle distributions
-  - Sampling preview on the unit sphere
+### Outputs
+- **Files**:  
+  - Rotated coordinates saved as an **XYZ trajectory**.  
+  - `data.dat` containing the Euler angles (θ, φ, ψ) used.  
 
+- **Figures** (generated automatically):  
+  - Angle distributions (θ, φ, ψ).  
+  - Sampling preview of orientations on the unit sphere.  
 
 
 
