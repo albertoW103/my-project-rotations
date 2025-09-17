@@ -108,8 +108,12 @@ python rotate_adsorbate.py
 
 The script will ask for:
 - protein name: $\textit{e.g.}$ protein.xyz  (coarce-grained of a protein in this version)
-- mode: e.g. random or grid (more models can be seted)
-- nrot for random or (ntheta, nphi, npsi) for grid
+- mode: $\textit{e.g.}$ 'random' or 'grid' (more models can be seted)
+- 'nrot' for random or ('nθ', 'nφ', 'nψ') for grid
+
+
+
+
 
 
 
