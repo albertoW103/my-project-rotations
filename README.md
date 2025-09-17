@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="figures/angles_three_grid.png" alt="Ángulos" width="45%"/>
+  <img src="figures/sphere_points_grid.png" alt="Esfera" width="45%"/>
+</p>
+
+
 # rotate_adsorbate.py
 
 Genera configuraciones rotadas de una molécula/proteína usando ángulos de Euler (convención **ZYZ**).  
