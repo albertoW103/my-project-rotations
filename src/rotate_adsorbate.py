@@ -479,7 +479,7 @@ def read_xyz_file(input_filename):
     return nu, header, res, x, y, z
 
 
-def angles_to_sphere_points():
+def angles_to_sphere_points(filename):
     '''
     Plot a unit sphere and overlay points computed from the spherical angles
     theta (polar) and phi (azimuthal) read from 'data.dat'.
@@ -525,6 +525,7 @@ def angles_to_sphere_points():
     ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
     ax.set_title("Points on sphere (θ, φ)")
     plt.show()
+    fig.savefig(filename, dpi=300, bbox_inches="tight")
 
 
 ########################################################
@@ -552,13 +553,17 @@ elif mode == "grid":
     
     nrot = ntheta * nphi * npsi
     xyz_output_filename = f"{input_filename.split('.')[0]}_nrot-{nrot}_{mode}.xyz"
-    
+else:
+    print('I need something')
+    exit()
+
 # get rotations:
 print(f"name of the protein: {input_filename.split('.')[0]}")
 nrotx = adsorbate_rot(xyz_output_filename, nu, header, res, x, y, z, ntheta, nphi, npsi, mode, nrot)
 
 # plot:
-angles_to_sphere_points()
+filename = f'angles_to_sphere_nrot-{nrot}_{mode}'
+angles_to_sphere_points(filename)
 
 
 ########################################################

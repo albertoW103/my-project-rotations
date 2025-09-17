@@ -68,6 +68,9 @@ The following figure shows the angle theta and phi that describe a vector on the
 
 ![Puntos en la esfera](figures/angles_three_random.png)
 
+| ![random](figures/angles_to_sphere_nrot-1000_random.png) | ![grid](figures/angles_to_sphere_nrot-4000_grid.png) |
+
+
 As we can see, distribution is unifor on the sphere.
 
 Additionaly, the follogin figure shows the range and the distribution of the three angles sampled.
