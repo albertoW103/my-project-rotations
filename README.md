@@ -31,16 +31,16 @@ This tool is useful for molecular simulations, protein orientation studies, and 
   - `grid` → sampling using midpoints (open intervals)  
   - `grid_2` → sampling including endpoints
   - `random` → Haar-like random sampling  
-- **Optional parameters**: number of divisions (`nθ`, `nφ`, `nψ`) or total number of rotations (`nrot`).
+- **Optional parameters**: number of divisions (`n$_{\theta}$`, `n$_{\phi}$`, `n$_{\psi}$`) or total number of rotations (`nrot`).
 
 
 ### Outputs
 - **Files**:  
   - Rotated coordinates saved as an **XYZ trajectory**.  
-  - `data.dat` containing the Euler angles (θ, φ, ψ) used.  
+  - `data.dat` containing the Euler angles ($\theta$, $\phi$, $\psi$) used.  
 
 - **Figures** (generated automatically):  
-  - Angle distributions (θ, φ, ψ).  
+  - Angle distributions ($\theta$, $\phi$, $\psi$).  
   - Sampling preview of orientations on the unit sphere.  
 
 
@@ -57,8 +57,8 @@ The rotation of a protein (or any molecule) can be expressed as the orientation 
 In spherical coordinates, this vector is defined by the polar angle $\theta$ and the azimuthal angle $\phi$ so:
 
 $$
-\hat r = (\sin\theta \cos\phi ; \sin\theta \sin\phi ; \cos\theta),
-\qquad 0 \leq \theta \leq \pi ; 0 \leq \phi < 2\pi.
+\hat r = (\sin\theta \cos\phi , \sin\theta \sin\phi , \cos\theta),
+\qquad 0 \leq \theta \leq \pi , 0 \leq \phi < 2\pi
 $$
 
 The corresponding surface element on the unit sphere is:
@@ -74,7 +74,7 @@ $$
 S = \int_{0}^{\pi} \int_{0}^{2\pi} \sin\theta d\theta d\phi
 $$
 
-Using the relationship $-d\left( \cos\theta \right) = \sin\theta d\theta$ and inverting the range of integration (from $0$ to $\pi$), we obtain the following expression:
+Using the relationship $-d\left( \cos\theta \right) = \sin\theta d\theta$ and inverting the range of integration (from $\pi$ to $0$), we obtain the following expression:
 
 $$
 S = \int_{-1}^{1} \int_{0}^{2\pi} d\left(\cos\theta\right) d\phi
@@ -89,7 +89,7 @@ $$
 \begin{aligned}
 \cos \theta &\in [-1, 1], \\
 \phi &\in [0, 2\pi), \\
-\psi &\in [0, 2\pi).
+\psi &\in [0, 2\pi)
 \end{aligned}
 $$
 
