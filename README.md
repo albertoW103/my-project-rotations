@@ -33,7 +33,6 @@ This tool is useful for molecular simulations, protein orientation studies, and 
   - `random` → Haar-like random sampling  
 - **Optional parameters**: number of divisions (`nθ`, `nφ`, `nψ`) or total number of rotations (`nrot`).
 
----
 
 ### Outputs
 - **Files**:  
@@ -55,35 +54,33 @@ This tool is useful for molecular simulations, protein orientation studies, and 
 Here, we justify the range of the angle in order to sample rotation of protein.
 
 The rotation of a protein (or any molecule) can be expressed as the orientation of a unit vector $\hat r$.  
-In spherical coordinates, this vector is defined by the polar angle $\theta$ and the azimuthal angle $\phi$:
+In spherical coordinates, this vector is defined by the polar angle $\theta$ and the azimuthal angle $\phi$ so:
 
 $$
-\hat r = (\sin\theta \cos\phi,\; \sin\theta \sin\phi,\; \cos\theta),
-\qquad 0 \leq \theta \leq \pi,\; 0 \leq \phi < 2\pi.
+\hat r = (\sin\theta \cos\phi ; \sin\theta \sin\phi ; \cos\theta),
+\qquad 0 \leq \theta \leq \pi ; 0 \leq \phi < 2\pi.
 $$
 
 The corresponding surface element on the unit sphere is:
 
 $$
-dS = \sin\theta d\theta d\phi.
+dS = \sin\theta d\theta d\phi
 $$
 
-Integrating this surface element over the full ranges of $\theta$ and $\phi$ covers the entire sphere,  
-which corresponds to sampling all possible orientations:
+Integrating this surface element over the full ranges of $\theta$ and $\phi$ covers the entire sphere, which corresponds to sampling all possible orientations:
 
 
 $$
-S = \int_{0}^{\pi} \int_{0}^{2\pi} \sin\theta d\theta d\phi.
+S = \int_{0}^{\pi} \int_{0}^{2\pi} \sin\theta d\theta d\phi
 $$
 
-Using the relationship $-d\cos\theta = \sin\theta d\theta$ and inverting the range of integration (from $-\pi$ to $\pi$),
-we obtain:
+Using the relationship $-d\left( \cos\theta \right) = \sin\theta d\theta$ and inverting the range of integration (from $0$ to $\pi$), we obtain the following expression:
 
 $$
-S = \int_{-1}^{1} \int_{0}^{2\pi} d(\cos\theta) d\phi.
+S = \int_{-1}^{1} \int_{0}^{2\pi} d\left(\cos\theta\right) d\phi
 $$
 
-This formulation shows that **uniform sampling in $\cos\theta$ and $\phi$ is required** to generate an unbiased distribution of orientations.  
+This formulation shows that uniform sampling in $\cos\theta$ and $\phi$ is required to generate an unbiased distribution of orientations.  
 To account for rotations around $\hat r$, a third angle $\psi$ is introduced with range $0 \leq \psi < 2\pi$.
 
 Thus, a random orientation in 3D is obtained by sampling:
