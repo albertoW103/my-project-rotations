@@ -21,14 +21,10 @@ Soporta muestreos por grilla o aleatorios y guarda tanto las coordenadas como lo
 ## Quick start
 
 python rotate_adsorbate.py
-# Name of the file XYZ (ej: protein.xyz): protein.xyz
-# Mode of rotation [grid / random]: random
-# Number of divisions in θ: 1000
-
 
 The following figure shows the angle theta and phi that describe a vector on the surface of an sphere.
 
-![Puntos en la esfera](figures/sphere_points_grid.png)
+![Puntos en la esfera](figures/sphere_points_random.png)
 
 As we can see, distribution is unifor on the sphere.
 
