@@ -15,6 +15,11 @@ Instalación rápida:
 pip install numpy scipy matplotlib
 
 
+- **Modes**: `grid` (midpoints), `grid_2` (endpoints), `random` (Haar-like)
+- **Outputs**: XYZ trajectory with rotated coordinates + `data.dat` (θ, φ, ψ)
+- **Figures**: angle distributions and sampling preview on the unit sphere
+
+
 ## Resultados
 
 
@@ -25,3 +30,10 @@ pip install numpy scipy matplotlib
 ### Distribución de ángulos (θ, φ, ψ)
 ![Distribución de ángulos](figures/angles_three_grid.png)
 
+## Quick start
+python rotate_adsorbate.py
+# Name of the file XYZ (ej: protein.xyz): protein.xyz
+# Mode of rotation [grid / random]: grid
+# Number of divisions in θ: 6
+# Number of divisions in φ: 12
+# Number of divisions in ψ: 12
