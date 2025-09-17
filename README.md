@@ -118,10 +118,6 @@ The uniform spread of points across the sphere demonstrates isotropic sampling o
   <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/>
 </p>
 
-
-| Random                                                   | Grid                                                 |
-| -------------------------------------------------------- | ---------------------------------------------------- |
-| ![Random](figures/angles_to_sphere_nrot-1000_random.png) | ![Grid](figures/angles_to_sphere_nrot-4000_grid.png) |
 **Figure 1.** Sampling of orientations on the unit sphere).
 
 On the other hand, panel B shows the distribution using grid sampling with $n_{\theta}$ = 20, $n_{\phi}$ = 10, and $n_{\psi}$ = 10.
