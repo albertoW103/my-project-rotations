@@ -456,7 +456,7 @@ def adsorbate_rot(
             for phi in phi_list:
                 for psi in psi_list:
                     triplet_list.append((theta, phi, psi))
-                        
+        
     elif mode == 'random':
         ##########################################################
         # Haar-like sampling via independent ZYZ parameters:
@@ -491,18 +491,58 @@ def adsorbate_rot(
             
             # append:
             triplet_list.append((theta, phi, psi))
+            
+    elif mode == 'kuffner':
+        ##########################################################
+        # Kuffner (2004) algorithm for uniform random Euler angles
+        # Roll–Pitch–Yaw convention (θ, φ, η)
+        ##########################################################
+        print('\n............................................')
+        print('method used: kuffner (uniform RPY random sampling)')
+        print('............................................\n')
+        
+        seed = 0
+        rng  = np.random.default_rng(seed)  # random number generator
+        print(f"kuffner: RNG seed = {seed}")
+        
+        if (nrot is None) or (nrot < 1):
+            print("[kuffner][abort]: 'nrot' must be > 0")
+            return
+            
+        triplet_list = []
+        
+        for _ in range(nrot):
+            # Generate random numbers:
+            u1, u2, u3, u4 = rng.random(), rng.random(), rng.random(), rng.random()
+            
+            # Algorithm from pseudocode (θ = roll, φ = pitch, η = yaw)
+            theta = np.arccos(1.0 - 2.0*u1) + (np.pi/2.0) # [-pi/2, pi/2)
+            psi   = 2.0 * np.pi * u2 - np.pi              # [-pi, pi)
+            
+            # reflection adjustment:
+            if u3 < 0.5:
+                if theta < np.pi:
+                    theta = theta + np.pi
+                else:
+                    theta = theta - np.pi
                 
-        # plot:
-        theta_list = [t[0] for t in triplet_list]
-        phi_list   = [t[1] for t in triplet_list]
-        psi_list   = [t[2] for t in triplet_list]
-                                
+            psi = 2.0 * np.pi * u4 - np.pi               # [-pi, pi)
+            
+            # store triplet
+            triplet_list.append((theta, phi, psi))
+                 
     else:
         raise ValueError("mode must be one of {'grid', 'grid_2', 'random'}.")
+    
     
     ###################################
     #
     ###################################
+    theta_list = [t[0] for t in triplet_list]
+    phi_list   = [t[1] for t in triplet_list]
+    psi_list   = [t[2] for t in triplet_list]
+    
+    
     n_total, n_unique, n_dupes, keep_idx = check_unique_rotations(triplet_list)
     print(f"[dedup] total={n_total}, unique={n_unique}, duplicated={n_dupes}")
     
