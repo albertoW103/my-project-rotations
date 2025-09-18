@@ -72,56 +72,54 @@ def get_angles(xrot, yrot, zrot, n1, n2, n3):
     costh = delz / delr
     phi   = math.atan2(dely, delx)
     costh2 = costh*costh
- 
+    
     # --- ψ: ángulo orientado en [0, 2π) en convención ZYZ, usando solo trigonometría ---
 
     # Vector v13 = r(n1) - r(n3)
     delx13 = xrot[n1] - xrot[n3]
     dely13 = yrot[n1] - yrot[n3]
     delz13 = zrot[n1] - zrot[n3]
-
+    
     # sen(θ) y cos(θ) a partir de cosθ (ya calculado)
     sinth = math.sqrt(max(0.0, 1.0 - costh*costh))
     cosph = math.cos(phi)
     sinph = math.sin(phi)
-
+    
     # Ejes del cuerpo tras aplicar φ y θ (columnas 1 y 2 de Rz(φ)·Ry(θ)):
     # x'' = (cosφ cosθ,  sinφ cosθ, -sinθ)
     exx = cosph * costh
     exy = sinph * costh
     exz = -sinth
-
+    
     # y'' = (-sinφ, cosφ, 0)
     eyx = -sinph
     eyy =  cosph
     eyz =  0.0
-
+    
     # Proyección de v13 sobre (x'', y''):
     px = delx13*exx + dely13*exy + delz13*exz
     py = delx13*eyx + dely13*eyy + delz13*eyz
-
+    
     # Ángulo orientado en el plano x''–y'':
     psi = math.atan2(py, px)
-    if psi < 0.0:
-        psi += 2.0*math.pi
-    
-    # definition of the fectors
-    
+           
     return costh, phi, costh2, psi
 
 
-def plot_angles_1x3(costheta_list, phi_list, psi_list, outname="histos_angles_1x3.png"):
+def plot_angles_1x3(costheta_list, phi_list, psi_list, outname):
+
+    outname="histos_angles_1x3.png"
     
     costheta_list = np.array(costheta_list)
-    phi_list = (np.mod(np.asarray(phi_list), 2*np.pi)) / np.pi   # [0,2]
-    psi_list = (np.mod(np.asarray(psi_list), 2*np.pi)) / np.pi   # [0,2]
+    phi_list      = np.array(phi_list) / np.pi   # [0,2]
+    psi_list      = np.array(psi_list) / np.pi   # [0,2]
     
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
     bins=80
     
     # cos(theta) en [-1, 1]
     ax = axes[0]
-    ax.hist(costheta_list, bins=bins, range=(-1.0, 1.0), density=True, alpha=0.8, edgecolor='black')
+    ax.hist(costheta_list, bins=bins, range=(-1, 1), density=True, alpha=0.8, edgecolor='black')
     ax.axhline(0.5, linestyle='dashed', color='black')
     ax.set_title('Density of $\cos\\theta$')
     ax.set_ylabel('Density')
@@ -129,27 +127,27 @@ def plot_angles_1x3(costheta_list, phi_list, psi_list, outname="histos_angles_1x
     ax.set_ylim(0, 1)
     ax.set_xlim(-1, 1)
     ax.grid(True, alpha=0.3)
-
+    
     # φ en [0, 2π)
     ax = axes[1]
-    ax.hist(phi_list, bins=bins, range=(0.0, 2.0), density=True, alpha=0.8, edgecolor='black')
+    ax.hist(phi_list, bins=bins, range=(-1, 1), density=True, alpha=0.8, edgecolor='black')
     ax.axhline(0.5, linestyle='dashed', color='black')
     ax.set_title('Density of $\phi$')
     ax.set_ylabel('Density')
     ax.set_xlabel(r'$\phi$/$\pi$')
     ax.set_ylim(0, 1)
-    ax.set_xlim(0, 2)
+    ax.set_xlim(-1, 1)
     ax.grid(True, alpha=0.3)
-
+    
     # ψ en [0, 2π)
     ax = axes[2]
-    ax.hist(psi_list, bins=bins, range=(0.0, 2.0), density=True, alpha=0.8, edgecolor='black')
+    ax.hist(psi_list, bins=bins, range=(-1, 1), density=True, alpha=0.8, edgecolor='black')
     ax.axhline(0.5, linestyle='dashed', color='black')
     ax.set_title('Density of $\psi$')
     ax.set_ylabel('Density')
     ax.set_xlabel(r'$\psi$/$\pi$')
     ax.set_ylim(0, 1)
-    ax.set_xlim(0, 2)
+    ax.set_xlim(-1, 1)
     ax.grid(True, alpha=0.3)
 
     plt.savefig(outname, dpi=300, bbox_inches='tight')

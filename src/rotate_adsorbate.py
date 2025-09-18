@@ -35,6 +35,52 @@ import os
 # Utilities
 # ---------------------------
 
+from scipy.spatial.transform import Rotation as R
+import numpy as np
+
+def check_unique_rotations(triplet_list, seq="ZYZ", tol=1e-12):
+    """
+    Detecta si hay rotaciones repetidas en una lista de ángulos de Euler (θ, φ, ψ).
+    Usa matrices de rotación para evitar ambigüedades.
+
+    Parameters
+    ----------
+    triplet_list : list of (theta, phi, psi)
+        Lista de ángulos en radianes.
+    seq : str
+        Convención de Euler (por defecto "ZYZ").
+    tol : float
+        Tolerancia para comparar matrices.
+
+    Returns
+    -------
+    n_total : int
+        Número total de rotaciones generadas.
+    n_unique : int
+        Número de rotaciones únicas.
+    n_dupes : int
+        Número de duplicados encontrados.
+    keep_idx : np.ndarray
+        Índices de las rotaciones únicas.
+    """
+    if not triplet_list:
+        return 0, 0, 0, np.array([], dtype=int)
+    
+    # Reordenar a (phi, theta, psi) porque scipy espera ese orden en ZYZ
+    angles = np.array([(phi, theta, psi) for (theta, phi, psi) in triplet_list], dtype=float)
+    Rm = R.from_euler(seq, angles).as_matrix().reshape(len(triplet_list), 9)
+
+    # Cuantizar por tolerancia y encontrar duplicados
+    flat_quant = np.round(Rm / tol).astype(np.int64)
+    _, keep_idx, _ = np.unique(flat_quant, axis=0, return_index=True, return_inverse=True)
+
+    n_total = len(triplet_list)
+    n_unique = len(keep_idx)
+    n_dupes = n_total - n_unique
+
+    return n_total, n_unique, n_dupes, keep_idx
+
+
 def ask_positive_int(prompt: str) -> int:
     """
     Prompt until the user provides a positive integer (> 0).
@@ -170,6 +216,102 @@ def print_delta(label, delta, arr, denom=1.0, suffix=""):
     else:
         print(f"{label} = {delta/denom:.2f}{suffix}")
         
+def read_xyz_file(input_filename):
+    """
+    Read a simple XYZ (N, header, then label x y z) and return (nu, header, res, x, y, z).
+    
+    Parameters:
+        input_filename (str): Path to input .xyz file.
+    Returns:
+        nu (int): Number of points/atoms.
+        header (str): XYZ header line.
+        res (list[str]): Labels per point, length nu.
+        x (np.ndarray): X coordinates, shape (nu,).
+        y (np.ndarray): Y coordinates, shape (nu,).
+        z (np.ndarray): Z coordinates, shape (nu,).
+        
+    """
+    
+    # Open file:
+    with open(input_filename, 'r') as file:
+        # Number of atoms/points:
+        nu = int(file.readline())
+        
+        # Header line:
+        header = file.readline().rstrip("\n")
+        
+        # Accumulators:
+        res, x, y, z = [], [], [], []
+        
+        # Read N coordinate lines:
+        for _ in range(nu):
+            line = file.readline().split()
+            resi = line[0]
+            xi = float(line[1])
+            yi = float(line[2])
+            zi = float(line[3])
+            
+            res.append(resi)
+            x.append(xi)
+            y.append(yi)
+            z.append(zi)
+    
+    # Convert to numpy arrays:
+    x = np.array(x)   # arrays
+    y = np.array(y)   # arrays
+    z = np.array(z)   # arrays
+    
+    return nu, header, res, x, y, z
+
+
+def angles_to_sphere_points(filename):
+    '''
+    Plot a unit sphere and overlay points computed from the spherical angles
+    theta (polar) and phi (azimuthal) read from 'data.dat'.
+    '''
+    print('Plotting points using theta and phi angles')
+    
+    # Extract angles from file:
+    input_filename="data.dat"
+    thetas, phis = [], []
+    with open(input_filename, "r") as file:
+        for line in file:
+            vals = line.split()           
+            theta = float(vals[0])
+            phi = float(vals[1])
+            thetas.append(theta)
+            phis.append(phi)
+    
+    # Convert to arrays:
+    th = np.asarray(thetas)
+    ph = np.asarray(phis)
+    
+    # Convert spherical (theta, phi) to Cartesian on the unit sphere:
+    x = np.sin(th)*np.cos(ph)
+    y = np.sin(th)*np.sin(ph)
+    z = np.cos(th)
+    
+    # Initialize the plot:
+    fig = plt.figure(figsize=(6, 6))
+    ax = fig.add_subplot(111, projection="3d")
+    
+    # Reference sphere mesh:
+    u = np.linspace(0, 2*np.pi, 60)
+    v = np.linspace(0, np.pi, 30)
+    xs = np.outer(np.cos(u), np.sin(v))
+    ys = np.outer(np.sin(u), np.sin(v))
+    zs = np.outer(np.ones_like(u), np.cos(v))
+    ax.plot_wireframe(xs, ys, zs, linewidth=0.3, alpha=0.2)
+    
+    # Points:
+    ax.scatter(x, y, z, s=12, alpha=0.85)
+    ax.set_box_aspect((1, 1, 1))
+    ax.set_xlim(-1,1); ax.set_ylim(-1,1); ax.set_zlim(-1,1)
+    ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
+    ax.set_title("Points on sphere (θ, φ)")
+    fig.savefig(filename, dpi=300)
+    plt.show()
+
 
 def rota(xsv: np.ndarray,
 	 ysv: np.ndarray,
@@ -314,60 +456,7 @@ def adsorbate_rot(
             for phi in phi_list:
                 for psi in psi_list:
                     triplet_list.append((theta, phi, psi))
-
-    elif mode == "grid_2":
-        ###################################################
-        # Endpoints included:
-        # cosθ ∈ [-1, 1] (includes ±1)  → θ = arccos(cosθ)
-        # φ, ψ ∈ [0, 2π) (include 0, exclude 2π to avoid duplicates)
-        ###################################################
-        print('\n............................................')
-        print('method used: grid_2 (endpoints included)')
-        print(f"grid_2: divisions = ntheta={ntheta}, nphi={nphi}, npsi={npsi}")
-        print('............................................\n')
-
-        if None in (ntheta, nphi, npsi):
-            print("grid_2: missing parameters (ntheta/nphi/npsi). Doing nothing.")
-            return
-        
-        if ntheta <= 0 or nphi <= 0 or npsi <= 0:
-            print("grid_2: all ntheta/nphi/npsi must be > 0.")
-            return
-
-        # warning if theta sampling is too coarse:
-        if ntheta < 10:
-            print("grid_2: warning — coarse sampling in cos(theta); results may be biased.")
-            
-        # cosθ with endpoints; φ and ψ with 0 included and 2π excluded:
-        if ntheta == 1:
-            costheta_arr = np.array([0.0])                  # un solo valor: θ = π/2
-            delta_costheta = None
-        else:
-            costheta_arr = np.linspace(-1.0, 1.0, ntheta, endpoint=True)
-            delta_costheta = 2.0 / (ntheta - 1)
-
-        phi_arr = np.linspace(0.0, 2*pi, nphi, endpoint=False)
-        psi_arr = np.linspace(0.0, 2*pi, npsi, endpoint=False)
-        delta_phi = (2*pi) / nphi if nphi > 0 else None
-        delta_psi = (2*pi) / npsi if npsi > 0 else None
-
-        # grid info:
-        print_delta("Δcosθ", delta_costheta, costheta_arr)
-        print_delta("Δφ",    delta_phi,      phi_arr, math.pi, " π")
-        print_delta("Δψ",    delta_psi,      psi_arr, math.pi, " π")
-
-        # to lists:
-        theta_list = np.arccos(np.clip(costheta_arr, -1.0, 1.0)).tolist()
-        phi_list   = phi_arr.tolist()
-        psi_list   = psi_arr.tolist()
-
-        # build triplets:
-        triplet_list = []
-        for theta in theta_list:
-            for phi in phi_list:
-                for psi in psi_list:
-                    triplet_list.append((theta, phi, psi))  # triple of angles to generate rotations
-                
+                        
     elif mode == 'random':
         ##########################################################
         # Haar-like sampling via independent ZYZ parameters:
@@ -395,7 +484,6 @@ def adsorbate_rot(
             
             # theta:
             theta = np.arccos(2.0*u1 - 1.0)   # get cosθ ~ U[-1,1)
-            #theta = u1*pi   # get cosθ ~ U[-1,1)
             
             # phi and psi (the same for both):
             phi   = 2.0*pi*u2                 # U[0,2π)
@@ -412,6 +500,11 @@ def adsorbate_rot(
     else:
         raise ValueError("mode must be one of {'grid', 'grid_2', 'random'}.")
     
+    ###################################
+    #
+    ###################################
+    n_total, n_unique, n_dupes, keep_idx = check_unique_rotations(triplet_list)
+    print(f"[dedup] total={n_total}, unique={n_unique}, duplicated={n_dupes}")
     
     # calculate lenght:
     length = len(triplet_list)
@@ -463,101 +556,6 @@ def adsorbate_rot(
     print("Triplet angles saved as data.dat")
     
 
-def read_xyz_file(input_filename):
-    """
-    Read a simple XYZ (N, header, then label x y z) and return (nu, header, res, x, y, z).
-    
-    Parameters:
-        input_filename (str): Path to input .xyz file.
-    Returns:
-        nu (int): Number of points/atoms.
-        header (str): XYZ header line.
-        res (list[str]): Labels per point, length nu.
-        x (np.ndarray): X coordinates, shape (nu,).
-        y (np.ndarray): Y coordinates, shape (nu,).
-        z (np.ndarray): Z coordinates, shape (nu,).
-        
-    """
-    
-    # Open file:
-    with open(input_filename, 'r') as file:
-        # Number of atoms/points:
-        nu = int(file.readline())
-        
-        # Header line:
-        header = file.readline().rstrip("\n")
-        
-        # Accumulators:
-        res, x, y, z = [], [], [], []
-        
-        # Read N coordinate lines:
-        for _ in range(nu):
-            line = file.readline().split()
-            resi = line[0]
-            xi = float(line[1])
-            yi = float(line[2])
-            zi = float(line[3])
-            
-            res.append(resi)
-            x.append(xi)
-            y.append(yi)
-            z.append(zi)
-    
-    # Convert to numpy arrays:
-    x = np.array(x)   # arrays
-    y = np.array(y)   # arrays
-    z = np.array(z)   # arrays
-    
-    return nu, header, res, x, y, z
-
-
-def angles_to_sphere_points(filename):
-    '''
-    Plot a unit sphere and overlay points computed from the spherical angles
-    theta (polar) and phi (azimuthal) read from 'data.dat'.
-    '''
-    print('Plotting points using theta and phi angles')
-    
-    # Extract angles from file:
-    input_filename="data.dat"
-    thetas, phis = [], []
-    with open(input_filename, "r") as file:
-        for line in file:
-            vals = line.split()           
-            theta = float(vals[0])
-            phi = float(vals[1])
-            thetas.append(theta)
-            phis.append(phi)
-    
-    # Convert to arrays:
-    th = np.asarray(thetas)
-    ph = np.asarray(phis)
-    
-    # Convert spherical (theta, phi) to Cartesian on the unit sphere:
-    x = np.sin(th)*np.cos(ph)
-    y = np.sin(th)*np.sin(ph)
-    z = np.cos(th)
-    
-    # Initialize the plot:
-    fig = plt.figure(figsize=(6, 6))
-    ax = fig.add_subplot(111, projection="3d")
-    
-    # Reference sphere mesh:
-    u = np.linspace(0, 2*np.pi, 60)
-    v = np.linspace(0, np.pi, 30)
-    xs = np.outer(np.cos(u), np.sin(v))
-    ys = np.outer(np.sin(u), np.sin(v))
-    zs = np.outer(np.ones_like(u), np.cos(v))
-    ax.plot_wireframe(xs, ys, zs, linewidth=0.3, alpha=0.2)
-    
-    # Points:
-    ax.scatter(x, y, z, s=12, alpha=0.85)
-    ax.set_box_aspect((1, 1, 1))
-    ax.set_xlim(-1,1); ax.set_ylim(-1,1); ax.set_zlim(-1,1)
-    ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
-    ax.set_title("Points on sphere (θ, φ)")
-    fig.savefig(filename, dpi=300)
-    plt.show()
 
 
 ########################################################
@@ -594,7 +592,7 @@ print(f"name of the protein: {input_filename.split('.')[0]}")
 nrotx = adsorbate_rot(xyz_output_filename, nu, header, res, x, y, z, ntheta, nphi, npsi, mode, nrot)
 
 # plot:
-filename = f'angles_to_sphere_nrot-{nrot}_{mode}'
+filename = f'angles_to_sphere_nrot-{nrot}_{mode}.png'
 angles_to_sphere_points(filename)
 
 

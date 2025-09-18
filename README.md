@@ -83,21 +83,53 @@ $$
 This formulation shows that uniform sampling in $\cos\theta$ and $\phi$ is required to generate an unbiased distribution of orientations.  
 To account for rotations around $\hat r$, a third angle $\psi$ is introduced with range $0 \leq \psi < 2\pi$.
 
-Thus, a random orientation in 3D is obtained by sampling:
+Therefore, the theoretical range to sample rotations in 3D is:
 
 $$
 \begin{aligned}
 \cos \theta &\in [-1, 1] \\
+\phi &\in [0, 2\pi] \\
+\psi &\in [0, 2\pi]
+\end{aligned}
+$$
+
+
+Now, we implement three different ways to calculate the angles:
+
+### Random
+
+In the range distribution, the generation of random numbers in Python uses rng.random(), which produces values in the interval [0,1).
+Consequently, when mapping these values to angles, the upper bounds are never included.
+The ranges:
+
+$$
+\begin{aligned}
+\cos \theta &\in [-1, 1) \\
 \phi &\in [0, 2\pi) \\
 \psi &\in [0, 2\pi)
 \end{aligned}
 $$
 
+On $\cos \theta$ rotation at $\cos \theta$ = 0 is cero.
+On the other hand, on $\phi$ and $\psi$ rotation at 2$pi$ is also cero, avoing rotation repetion with angles at 0.
 
 
 
+### Pseudocode
 
 
+
+### Grid
+
+With this mode, the range are the following:
+
+$$
+\begin{aligned}
+\cos \theta &\in (-1, 1) \\
+\phi &\in (0, 2\pi) \\
+\psi &\in (0, 2\pi)
+\end{aligned}
+$$
 
 
 ## Quick start
