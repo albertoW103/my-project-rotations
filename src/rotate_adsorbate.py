@@ -78,11 +78,17 @@ def plot_three_angles(theta_list, phi_list, psi_list, filename):
     Una sola figura con 3 subplots (θ, φ, ψ) dibujados como flechas en el círculo.
     """
     radius = 2*np.pi
+    
     def draw(ax, angles, title):
+        # Normaliza a [0, 2π)
         ang = np.asarray(angles, float) % (2*np.pi)
+        
+        # Circunferencia (solo para referencia visual)
         t = np.linspace(0, 2*np.pi, 400)
         xc, yc = radius*np.cos(t), radius*np.sin(t)
         x = radius*np.cos(ang); y = radius*np.sin(ang)
+        
+        # Ejes guía
         ax.plot(xc, yc, lw=1.0, color='black')
         ax.axhline(0, lw=0.5, color='gray'); ax.axvline(0, lw=0.5, color='gray')
         for xi, yi in zip(x, y):

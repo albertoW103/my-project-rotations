@@ -120,7 +120,7 @@ The script will ask for:
 
 
 
-## Examples results
+## Examples results (random and grid)
 
 Figure 1 illustrates the possible outputs of the script. **Panel A** shows the distribution of orientations obtained by random sampling with $n_{\text{rot}} = 1000$. Each dot corresponds to a direction on the unit sphere, defined by the polar angle $\theta$ and the azimuthal angle $\phi$. The third Euler angle, $\psi$, follows a distribution analogous to $\phi$. The uniform spread of points across the sphere confirms isotropic sampling of orientations.
 
@@ -148,16 +148,19 @@ The example is shows in grid sampling with with $n_{\theta}$ = 20, $n_{\phi}$ = 
 It shoud be noted here, that the a random samplign cover a wide range of angles than grid, however a grid sampling offer a uniform sampling,
 
 
-## Optional
+## Examples results (grid)
 
 
 If the system exhibits symmetry around one of the axes, the number of angles to sample can be reduced.  
 For example, if the system is symmetric in the *xy*-plane, it is not necessary to include rotations around the $\phi$ angle.  
 The following figure illustrates this case.
 
-![Angle distribution](angles_to_sphere_nrot-200_grid.png)
-
+![Angle distribution](figures/angles_to_sphere_nrot-200_grid.png)
 **Figure 3.** Grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta} = 10$, $n_{\phi} = 1$, $n_{\psi} = 20$).
+
+
+
+
 
 
 
