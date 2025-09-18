@@ -155,7 +155,9 @@ If the system exhibits symmetry around one of the axes, the number of angles to 
 For example, if the system is symmetric in the *xy*-plane, it is not necessary to include rotations around the $\phi$ angle.  
 The following figure illustrates this case.
 
-![Angle distribution](figures/angles_to_sphere_nrot-200_grid.png)
+<p align="center">
+  <img src="figures/angles_to_sphere_nrot-200_grid.png" alt="Angle distribution" width="40%">
+</p>
 **Figure 3.** Grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta} = 10$, $n_{\phi} = 1$, $n_{\psi} = 20$).
 
 

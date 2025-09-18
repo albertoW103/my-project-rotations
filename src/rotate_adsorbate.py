@@ -75,36 +75,66 @@ def count_unique_angles(angles, decimals=None):
 
 def plot_three_angles(theta_list, phi_list, psi_list, filename):
     """
-    Una sola figura con 3 subplots (θ, φ, ψ) dibujados como flechas en el círculo.
+    Create a single figure with 3 subplots (θ, φ, ψ).
+    Each subplot shows the input angles as arrows drawn from the origin to the circumference of a circle.
     """
-    radius = 2*np.pi
-    
-    def draw(ax, angles, title):
-        # Normaliza a [0, 2π)
-        ang = np.asarray(angles, float) % (2*np.pi)
-        
-        # Circunferencia (solo para referencia visual)
-        t = np.linspace(0, 2*np.pi, 400)
-        xc, yc = radius*np.cos(t), radius*np.sin(t)
-        x = radius*np.cos(ang); y = radius*np.sin(ang)
-        
-        # Ejes guía
-        ax.plot(xc, yc, lw=1.0, color='black')
-        ax.axhline(0, lw=0.5, color='gray'); ax.axvline(0, lw=0.5, color='gray')
-        for xi, yi in zip(x, y):
-            ax.arrow(0, 0, xi, yi, length_includes_head=True,
-                     head_width=0.12, head_length=0.28, linewidth=0.9)
-        ax.set_aspect('equal', adjustable='box')
-        ax.set_xlim(-1.1*radius, 1.1*radius); ax.set_ylim(-1.1*radius, 1.1*radius)
-        ax.set_title(title); ax.set_xticks([]); ax.set_yticks([]); ax.grid(True, alpha=0.3, lw=0.4)
 
+    radius = 2 * np.pi  # radius of the reference circle (arbitrary choice, only affects arrow length)
+
+    def draw(ax, angles, title):
+        # Convert input list to numpy array and normalize angles to [0, 2π)
+        ang = np.asarray(angles, float) % (2 * np.pi)
+
+        # Generate the circle outline for reference
+        t = np.linspace(0, 2 * np.pi, 400)
+        xc, yc = radius * np.cos(t), radius * np.sin(t)
+
+        # Convert each angle to its (x, y) endpoint on the circle
+        x = radius * np.cos(ang)
+        y = radius * np.sin(ang)
+
+        # Plot the circle outline
+        ax.plot(xc, yc, lw=1.0, color='black')
+
+        # Add horizontal and vertical axes for orientation
+        ax.axhline(0, lw=0.5, color='gray')
+        ax.axvline(0, lw=0.5, color='gray')
+
+        # Draw one arrow for each angle, from the origin to its (x, y) endpoint
+        for xi, yi in zip(x, y):
+            ax.arrow(
+                0, 0, xi, yi,
+                length_includes_head=True,  # include arrow head in the total length
+                head_width=0.12,            # width of the arrow head
+                head_length=0.28,           # length of the arrow head
+                linewidth=0.9               # line thickness
+            )
+
+        # Keep aspect ratio square (circle not distorted)
+        ax.set_aspect('equal', adjustable='box')
+
+        # Set limits slightly larger than radius so arrows fit nicely
+        ax.set_xlim(-1.1 * radius, 1.1 * radius)
+        ax.set_ylim(-1.1 * radius, 1.1 * radius)
+
+        # Add title for this subplot and clean up axes
+        ax.set_title(title)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.grid(True, alpha=0.3, lw=0.4)  # light background grid
+
+    # Create figure with 3 subplots (side by side)
     fig, axs = plt.subplots(1, 3, figsize=(15, 5), constrained_layout=True)
+
+    # Draw each set of angles on its corresponding subplot
     draw(axs[0], theta_list, "θ (theta)")
     draw(axs[1], phi_list,   "φ (phi)")
     draw(axs[2], psi_list,   "ψ (psi)")
-    
+
+    # Save the figure to file and close it
     fig.savefig(filename, dpi=300)
     plt.close(fig)
+
     
 
 def get_midpoints(rmin, rmax, dimr):
