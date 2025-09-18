@@ -130,11 +130,11 @@ Figure 1 illustrates the possible outputs of the script. **Panel A** shows the d
   <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/>
 </p>
 
-Figure 1. Sampling of orientations on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$.
+Figure 1. Sampling of orientations on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ (n$_{\theta}$ = 10, n$_{psi}$ = 20, n$_{\psi}$ = 20).
 
 
-On the other hand, panel B shows the distribution using grid sampling with $n_{\theta}$ = 20, $n_{\phi}$ = 10, and $n_{\psi}$ = 10.
-The figure shows a uniform distribution of the angles on the surface.
+On the other hand, panel B shows the distribution obtained with grid sampling, using $n_{\theta} = 20$, $n_{\phi} = 10$, and $n_{\psi} = 10$.
+The resulting points are uniformly distributed over the surface of the sphere.
 
 
 On the other hand, the script plot the angles in 2D plot, in order to visualize the extension and distribution of the three applied angles.
