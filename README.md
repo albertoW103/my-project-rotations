@@ -177,7 +177,7 @@ we can calculate $n_{\theta}$, $n_{\phi}$, and $n_{\psi}$ for each generated con
 The figure below shows the distribution of these angle values in a histogram representation.
 
 
-![Angle distributions](figures/histos_3x2.png)
+![Angle distributions](figures/histos_angles_1x3.png)
 **Figure 4.** Calculated angles from rotate protein.
 
 
