@@ -130,7 +130,7 @@ Figure 1 illustrates the possible outputs of the script. **Panel A** shows the d
   <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/>
 </p>
 
-Figure 1. Sampling of orientations on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ (n$_{\theta}$ = 10, n$_{psi}$ = 20, n$_{\psi}$ = 20).
+Figure 1. Sampling of rotation on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
 
 
 On the other hand, panel B shows the distribution obtained with grid sampling, using $n_{\theta} = 20$, $n_{\phi} = 10$, and $n_{\psi} = 10$.
@@ -142,7 +142,7 @@ The example is shows in grid sampling with with $n_{\theta}$ = 20, $n_{\phi}$ = 
 
 
 ![Distribución de ángulos](figures/angles_three_nrot-4000_grid.png)
-**Figure 2.** Employed angled to rotate the protein.
+**Figure 2.** Employed angled to rotate the protein for a grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
 
 
 It shoud be noted here, that the a random samplign cover a wide range of angles than grid, however a grid sampling offer a uniform sampling,
@@ -150,12 +150,14 @@ It shoud be noted here, that the a random samplign cover a wide range of angles 
 
 ## Optional
 
-If the system is
 
+If the system exhibits symmetry around one of the axes, the number of angles to sample can be reduced.  
+For example, if the system is symmetric in the *xy*-plane, it is not necessary to include rotations around the $\phi$ angle.  
+The following figure illustrates this case.
 
+![Angle distribution](angles_to_sphere_nrot-200_grid.png)
 
-
-
+**Figure 3.** Grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta} = 10$, $n_{\phi} = 1$, $n_{\psi} = 20$).
 
 
 
@@ -170,7 +172,7 @@ The figure below shows the distribution of these angle values in a histogram rep
 
 
 ![Angle distributions](figures/histos_3x2.png)
-**Figure 3.** Calculated angles from rotate protein.
+**Figure 4.** Calculated angles from rotate protein.
 
 
 This representation helps determine the sufficient number of rotations required for the system under investigation.  
