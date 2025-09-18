@@ -130,7 +130,7 @@ Figure 1 illustrates the possible outputs of the script. **Panel A** shows the d
   <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/>
 </p>
 
-Figure 1. Sampling of rotation on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
+**Figure 1.** Sampling of rotation on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
 
 
 On the other hand, panel B shows the distribution obtained with grid sampling, using $n_{\theta} = 20$, $n_{\phi} = 10$, and $n_{\psi} = 10$.
@@ -158,7 +158,7 @@ The following figure illustrates this case.
 <p align="center">
   <img src="figures/angles_to_sphere_nrot-200_grid.png" alt="Angle distribution" width="40%">
 </p>
-**Figure 3.** Grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta} = 10$, $n_{\phi} = 1$, $n_{\psi} = 20$).
+**Figure 3.** Grid sampling with $n_{rot} = 4000$ ($n_{\theta}$ = 10, $n_{\phi}$ = 1, $n_{\psi}$ = 20).
 
 
 
