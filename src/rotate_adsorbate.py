@@ -38,47 +38,35 @@ import os
 from scipy.spatial.transform import Rotation as R
 import numpy as np
 
-def check_unique_rotations(triplet_list, seq="ZYZ", tol=1e-12):
+def check_unique_rotations(triplet_list, convention=None, tol=1e-12):
     """
-    Detecta si hay rotaciones repetidas en una lista de ángulos de Euler (θ, φ, ψ).
-    Usa matrices de rotación para evitar ambigüedades.
-
-    Parameters
-    ----------
-    triplet_list : list of (theta, phi, psi)
-        Lista de ángulos en radianes.
-    seq : str
-        Convención de Euler (por defecto "ZYZ").
-    tol : float
-        Tolerancia para comparar matrices.
-
-    Returns
-    -------
-    n_total : int
-        Número total de rotaciones generadas.
-    n_unique : int
-        Número de rotaciones únicas.
-    n_dupes : int
-        Número de duplicados encontrados.
-    keep_idx : np.ndarray
-        Índices de las rotaciones únicas.
+    Detecta rotaciones repetidas comparando matrices de rotación cuantizadas.
+    'triplet_list' SIEMPRE viene como (theta, phi, psi) en radianes.
+    - Si convention == "ZYZ", SciPy espera (phi, theta, psi)  -> reordenar
+    - Si convention == "ZYX", SciPy espera (yaw, pitch, roll) -> usar tal cual (theta, phi, psi)
     """
     if not triplet_list:
         return 0, 0, 0, np.array([], dtype=int)
-    
-    # Reordenar a (phi, theta, psi) porque scipy espera ese orden en ZYZ
-    angles = np.array([(phi, theta, psi) for (theta, phi, psi) in triplet_list], dtype=float)
-    Rm = R.from_euler(seq, angles).as_matrix().reshape(len(triplet_list), 9)
 
-    # Cuantizar por tolerancia y encontrar duplicados
+    tps = np.asarray(triplet_list, dtype=float)  # (N, 3) con columnas (theta, phi, psi)
+
+    if convention == "ZYZ":
+        # SciPy espera (phi, theta, psi)
+        angles = np.column_stack([tps[:,1], tps[:,0], tps[:,2]])
+    elif convention == "ZYX":
+        # SciPy espera (yaw, pitch, roll) = (theta, phi, psi) aquí
+        angles = tps
+    else:
+        raise ValueError("Unsupported Euler sequence (expected 'ZYZ' or 'ZYX').")
+
+    Rm = R.from_euler(convention, angles, degrees=False).as_matrix().reshape(len(tps), 9)
     flat_quant = np.round(Rm / tol).astype(np.int64)
     _, keep_idx, _ = np.unique(flat_quant, axis=0, return_index=True, return_inverse=True)
 
-    n_total = len(triplet_list)
+    n_total  = len(tps)
     n_unique = len(keep_idx)
-    n_dupes = n_total - n_unique
-
-    return n_total, n_unique, n_dupes, keep_idx
+    n_dupes  = n_total - n_unique
+    return n_total, n_unique, n_dupes, np.sort(keep_idx)
 
 
 def ask_positive_int(prompt: str) -> int:
@@ -96,16 +84,13 @@ def ask_positive_int(prompt: str) -> int:
             print(f"[Error]: {e}. Please try again.")
 
 def ask_mode() -> str:
-    """
-    Prompt until the user provides a valid mode.
-    Valid options: 'grid' or 'random'.
-    """
     while True:
-        mode = input("Mode of rotation [grid / random]: ").strip().lower()
-        if mode in ["random", "grid"]:
+        mode = input("Mode of rotation [grid / random / kuffner]: ").strip().lower()
+        if mode in ["random", "grid", "kuffner"]:
             return mode
         else:
-            print("[Error]: You need to specify a valid mode (grid or random). Please try again.")
+            print("[Error]: valid modes are: grid, random, kuffner. Please try again.")
+
 
 def count_unique_angles(angles, decimals=None):
     """
@@ -264,82 +249,103 @@ def read_xyz_file(input_filename):
     return nu, header, res, x, y, z
 
 
-def angles_to_sphere_points(filename):
-    '''
-    Plot a unit sphere and overlay points computed from the spherical angles
-    theta (polar) and phi (azimuthal) read from 'data.dat'.
-    '''
-    print('Plotting points using theta and phi angles')
-    
+def angles_to_sphere_points_general(input_filename, mode, output_filename):
+    """
+    Dibuja en la esfera la orientación del eje Z del cuerpo (R * ez),
+    usando la convención correcta según el modo:
+      - 'random' y 'grid'  -> ZYZ  con orden (phi, theta, psi)
+      - 'kuffner'          -> ZYX  con orden (theta, phi, psi)  (yaw, pitch, roll)
+    """
+    # 1) leer ángulos
     # Extract angles from file:
-    input_filename="data.dat"
-    thetas, phis = [], []
+    thetas, phis, psis = [], [], []
     with open(input_filename, "r") as file:
         for line in file:
-            vals = line.split()           
+            # split:
+            vals = line.split()       
+            
+            # get values:
             theta = float(vals[0])
             phi = float(vals[1])
+            psi = float(vals[2])
+            
+            # append:
             thetas.append(theta)
             phis.append(phi)
+            psis.append(psi)
     
     # Convert to arrays:
-    th = np.asarray(thetas)
-    ph = np.asarray(phis)
+    thetas = np.array(thetas)
+    phis = np.array(phis)
+    psis = np.array(psis)
     
-    # Convert spherical (theta, phi) to Cartesian on the unit sphere:
-    x = np.sin(th)*np.cos(ph)
-    y = np.sin(th)*np.sin(ph)
-    z = np.cos(th)
+    # 2) construir rotaciones segun convención:
+    if mode in ("random","grid"):
+        convention = "ZYZ"
+        # SciPy's ZYZ expects (φ, θ, ψ)
+        # array de N tripletes
+        euler = np.column_stack([phis, thetas, psis])  # ZYZ espera (phi, theta, psi)
+        
+    elif mode == "kuffner":
+        convention = "ZYX"
+        # SciPy's ZYX expects (yaw, pitch, roll) = (θ, φ, ψ) here
+        # array de N tripletes
+        euler = np.column_stack([thetas, phis, psis])  # ZYX espera (yaw, pitch, roll)
+        
+    else:
+        raise ValueError("mode must be 'random', 'grid', or 'kuffner'")
     
-    # Initialize the plot:
-    fig = plt.figure(figsize=(6, 6))
+    # construye las rotaciones en 3D a partir de tus ángulos de Euler usando SciPy.
+    Rm = R.from_euler(convention, euler, degrees=False)
+    
+    # ---- 3) Apply rotations to e_z to get the oriented body Z-axis ----
+    ez = np.array([[0.0, 0.0, 1.0]])  # shape (1,3); apply() broadcasts to N×3
+    pts = Rm.apply(ez)                # shape (N,3)
+    x, y, z = pts[:,0], pts[:,1], pts[:,2]
+
+    # 4) graficar
+    fig = plt.figure(figsize=(6,6))
     ax = fig.add_subplot(111, projection="3d")
-    
-    # Reference sphere mesh:
+
     u = np.linspace(0, 2*np.pi, 60)
     v = np.linspace(0, np.pi, 30)
     xs = np.outer(np.cos(u), np.sin(v))
     ys = np.outer(np.sin(u), np.sin(v))
     zs = np.outer(np.ones_like(u), np.cos(v))
     ax.plot_wireframe(xs, ys, zs, linewidth=0.3, alpha=0.2)
-    
-    # Points:
+
     ax.scatter(x, y, z, s=12, alpha=0.85)
-    ax.set_box_aspect((1, 1, 1))
+    ax.set_box_aspect((1,1,1))
     ax.set_xlim(-1,1); ax.set_ylim(-1,1); ax.set_zlim(-1,1)
     ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
-    ax.set_title("Points on sphere (θ, φ)")
-    fig.savefig(filename, dpi=300)
+    ax.set_title(f"Points on sphere (mode = {mode}, seq = {convention})")
+    fig.savefig(output_filename, dpi=300, bbox_inches="tight")
     plt.show()
-
-
+    
 def rota(xsv: np.ndarray,
 	 ysv: np.ndarray,
 	 zsv: np.ndarray,
-	 theta, phi, psi):
+	 theta, phi, psi,
+	 mode):  # 'the most used: ZYZ'
     """
-    Rotación con Euler ZYZ. Esta función RECIBE (theta, phi, psi) y aplica:
-      R = Rz(phi) · Ry(theta) · Rz(psi)
-    nota: search convention ZY′Z″:
-    se rota primero alrededor de Z, luego alrededor de Y′ (ya rotado), y por último alrededor de Z″ (el Z después de las dos primeras).
-    ver este video: https://www.youtube.com/watch?v=N7AVc5yYX-k
-    el primer angulo seria phi, el segundo theta, y el tercero psi.
-    
-    Parameters:
-        x (np.ndarray): X coordinates, shape (N,).
-        y (np.ndarray): Y coordinates, shape (N,).
-        z (np.ndarray): Z coordinates, shape (N,).
-        theta (float): Polar angle θ in radians.
-        phi (float): Azimuthal angle φ in radians.
-        psi (float): Roll angle ψ in radians.
-    Returns:
-        xrot (np.ndarray): Rotated X, shape (N,).
-        yrot (np.ndarray): Rotated Y, shape (N,).
-        zrot (np.ndarray): Rotated Z, shape (N,).
-    
+    Aplica una rotación a las coordenadas (xsv, ysv, zsv) usando ángulos de Euler.
+    - Para mode in {'random','grid'} usa convención ZYZ (orden intrínseco): Rz(phi) · Ry(theta) · Rz(psi)
+    - Para mode == 'kuffner' usa convención ZYX (RPY/yaw–pitch–roll): Rz(theta) · Ry(phi) · Rx(psi)
+
+    Devuelve arrays rotados xrot, yrot, zrot.
     """
     coords = np.column_stack((xsv, ysv, zsv))                              # (N,3)
-    rotation = R.from_euler("ZYZ", [phi, theta, psi], degrees=False)       # φ, θ, ψ en rad
+    if mode in ('random', 'grid'):
+        convention = 'ZYZ'
+        # SciPy espera el orden de ángulos siguiendo la secuencia:
+        euler = [phi, theta, psi] # ZYZ → (phi, theta, psi)
+    elif mode == 'kuffner':
+        convention = 'ZYX'
+        euler = [theta, phi, psi]  # ZYX → (yaw=theta, pitch=phi, roll=psi)
+    else:
+        raise ValueError("Unsupported mode (expected 'random', 'grid', or 'kuffner').")
+        
+    rotation = R.from_euler(convention, euler, degrees=False)  # φ, θ, ψ en rad
     coords_rot = rotation.apply(coords)                                    # get xyz rotated coordenates
     xrot, yrot, zrot = coords_rot[:,0], coords_rot[:,1], coords_rot[:,2]   # split coordenates
     return  xrot, yrot, zrot                                               # np.arrays
@@ -412,6 +418,9 @@ def adsorbate_rot(
         print(f"grid: divisions = ntheta={ntheta}, nphi={nphi}, npsi={npsi}")
         print('............................................\n')
         
+        # here, we defined the convention to use:
+        convention = "ZYZ"
+        
         # require all grid sizes:
         if None in (ntheta, nphi, npsi):
             print("[grid][abort]: missing nθ/nφ/nψ")
@@ -465,7 +474,10 @@ def adsorbate_rot(
         print('\n............................................')
         print('method used: random (Haar-like sampling)')
         print('............................................\n')
-        
+
+        # here, we defined the convention to use:
+        convention = "ZYZ"
+                
         seed = 0
         rng  = np.random.default_rng(seed) # random number generator
         print(f"random: RNG seed = {seed}")
@@ -500,7 +512,10 @@ def adsorbate_rot(
         print('\n............................................')
         print('method used: kuffner (uniform RPY random sampling)')
         print('............................................\n')
-        
+
+        # here, we defined the convention to use:
+        convention = "ZYX"
+                
         seed = 0
         rng  = np.random.default_rng(seed)  # random number generator
         print(f"kuffner: RNG seed = {seed}")
@@ -508,29 +523,29 @@ def adsorbate_rot(
         if (nrot is None) or (nrot < 1):
             print("[kuffner][abort]: 'nrot' must be > 0")
             return
-            
+        
         triplet_list = []
         
         for _ in range(nrot):
             # Generate random numbers:
             u1, u2, u3, u4 = rng.random(), rng.random(), rng.random(), rng.random()
             
-            # Algorithm from pseudocode (θ = roll, φ = pitch, η = yaw)
-            theta = np.arccos(1.0 - 2.0*u1) + (np.pi/2.0) # [-pi/2, pi/2)
-            psi   = 2.0 * np.pi * u2 - np.pi              # [-pi, pi)
+            # Algorithm from pseudocode:
+            theta  = 2.0*pi*u1 - pi                        # [-pi, pi)
+            phi    = np.arccos(1.0 - 2.0*u2) + (pi/2.0)    # [-pi/2, pi/2)
             
             # reflection adjustment:
             if u3 < 0.5:
-                if theta < np.pi:
-                    theta = theta + np.pi
+                if phi < pi:
+                    phi = phi + pi
                 else:
-                    theta = theta - np.pi
-                
-            psi = 2.0 * np.pi * u4 - np.pi               # [-pi, pi)
+                    phi = phi - pi
             
-            # store triplet
+            psi = 2.0*pi*u4 - pi                          # [-pi, pi)
+            
+            # store triplet:
             triplet_list.append((theta, phi, psi))
-                 
+            
     else:
         raise ValueError("mode must be one of {'grid', 'grid_2', 'random'}.")
     
@@ -542,8 +557,8 @@ def adsorbate_rot(
     phi_list   = [t[1] for t in triplet_list]
     psi_list   = [t[2] for t in triplet_list]
     
-    
-    n_total, n_unique, n_dupes, keep_idx = check_unique_rotations(triplet_list)
+        
+    n_total, n_unique, n_dupes, keep_idx = check_unique_rotations(triplet_list, convention)
     print(f"[dedup] total={n_total}, unique={n_unique}, duplicated={n_dupes}")
     
     # calculate lenght:
@@ -565,7 +580,8 @@ def adsorbate_rot(
     with open(xyz_output_filename, 'w') as file:
         irot = 0
         for theta, phi, psi in triplet_list:   # the rotation is made from triplet
-            xrot, yrot, zrot = rota(xsv, ysv, zsv, theta, phi, psi)
+            # make rotation:
+            xrot, yrot, zrot = rota(xsv, ysv, zsv, theta, phi, psi, mode)
             
             # write molecule
             file.write(f"{nu}\n")
@@ -615,6 +631,12 @@ if mode == "random":
     nrot                 = int(nrot_str)
     ntheta = nphi = npsi = None
     xyz_output_filename  = f"{input_filename.split('.')[0]}_nrot-{nrot}_{mode}.xyz"
+
+elif mode == "kuffner":
+    nrot_str             = input("Numer of rotations: ").strip()
+    nrot                 = int(nrot_str)
+    ntheta = nphi = npsi = None
+    xyz_output_filename  = f"{input_filename.split('.')[0]}_nrot-{nrot}_{mode}.xyz"
     
 elif mode == "grid":
     ntheta = ask_positive_int("Number of divisions in θ: ")
@@ -632,9 +654,9 @@ print(f"name of the protein: {input_filename.split('.')[0]}")
 nrotx = adsorbate_rot(xyz_output_filename, nu, header, res, x, y, z, ntheta, nphi, npsi, mode, nrot)
 
 # plot:
-filename = f'angles_to_sphere_nrot-{nrot}_{mode}.png'
-angles_to_sphere_points(filename)
-
+input_filename = 'data.dat'
+output_filename = f'angles_to_sphere_nrot-{nrot}_{mode}.png'
+angles_to_sphere_points_general(input_filename, mode, output_filename)
 
 ########################################################
 # un esquema tipico en grilla es:

@@ -106,7 +106,7 @@ def get_angles(xrot, yrot, zrot, n1, n2, n3):
     return costh, phi, costh2, psi
 
 
-def plot_angles_1x3(costheta_list, phi_list, psi_list, outname):
+def plot_angles_1x3(costheta_list, phi_list, psi_list, output_filename):
 
     outname="histos_angles_1x3.png"
     
@@ -117,6 +117,7 @@ def plot_angles_1x3(costheta_list, phi_list, psi_list, outname):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
     bins=80
     
+    dx = 0.1
     # cos(theta) en [-1, 1]
     ax = axes[0]
     ax.hist(costheta_list, bins=bins, range=(-1, 1), density=True, alpha=0.8, edgecolor='black')
@@ -124,43 +125,43 @@ def plot_angles_1x3(costheta_list, phi_list, psi_list, outname):
     ax.set_title('Density of $\cos\\theta$')
     ax.set_ylabel('Density')
     ax.set_xlabel(r'$\cos\theta$')
-    ax.set_ylim(0, 1)
-    ax.set_xlim(-1, 1)
+    ax.set_ylim(0, 1+dx)
+    ax.set_xlim(-1-dx, 1+dx)
     ax.grid(True, alpha=0.3)
     
-    # φ en [0, 2π)
+    # φ en [-π, π)
     ax = axes[1]
     ax.hist(phi_list, bins=bins, range=(-1, 1), density=True, alpha=0.8, edgecolor='black')
     ax.axhline(0.5, linestyle='dashed', color='black')
     ax.set_title('Density of $\phi$')
     ax.set_ylabel('Density')
     ax.set_xlabel(r'$\phi$/$\pi$')
-    ax.set_ylim(0, 1)
-    ax.set_xlim(-1, 1)
+    ax.set_ylim(0, 1+dx)
+    ax.set_xlim(-1-dx, 1+dx)
     ax.grid(True, alpha=0.3)
     
-    # ψ en [0, 2π)
+    # ψ en [-π, π)
     ax = axes[2]
     ax.hist(psi_list, bins=bins, range=(-1, 1), density=True, alpha=0.8, edgecolor='black')
     ax.axhline(0.5, linestyle='dashed', color='black')
     ax.set_title('Density of $\psi$')
     ax.set_ylabel('Density')
     ax.set_xlabel(r'$\psi$/$\pi$')
-    ax.set_ylim(0, 1)
-    ax.set_xlim(-1, 1)
+    ax.set_ylim(0, 1+dx)
+    ax.set_xlim(-1-dx, 1+dx)
     ax.grid(True, alpha=0.3)
 
     plt.savefig(outname, dpi=300, bbox_inches='tight')
     print(f"Saved: {outname}")
-    plt.close(fig)
-
+    #plt.close(fig)
+    plt.show()
 
 
 # =========================================================
 # Main
 # =========================================================
-input_xyz = 'protein_nrot-5000_random.xyz'
-frames = get_blocks_proteins(input_xyz)
+input_filename = 'protein_nrot-5000_kuffner.xyz'
+frames = get_blocks_proteins(input_filename)
 n1, n2, n3 = 128, 363, 200
 
 costh_list, phi_list, psi_list, cos2_list = [], [], [], []
@@ -176,14 +177,12 @@ for frame in frames:
     psi_list.append(psi)
     cos2_list.append(cos2)
 
-# Figura 3x2 (2 filas, 3 columnas)
-fig, axes = plt.subplots(2, 3, figsize=(16, 8))
-
+output_filename = 'histos_angles_1x3.png'
 plot_angles_1x3(
     costh_list,   # cosθ
     phi_list,     # φ (rad)
     psi_list,     # ψ (rad)
-    outname="histos_angles_1x3.png"
+    output_filename
 )
 
 
