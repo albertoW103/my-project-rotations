@@ -142,11 +142,9 @@ or, for grid mode:
 
 Both methods cover orientations uniformly, but grid produces structured sampling while random achieves isotropy.
 
-| Random Sampling ($n_{\text{rot}} = 1000$) | Grid Sampling ($n_{\theta} = 10,\; n_{\phi} = 20,\; n_{\psi} = 20,\; n_{\text{rot}} = 4000$) |
-|-------------------------------------------|----------------------------------------------------------------------------------------------|
-| ![Random](figures/angles_to_sphere_nrot-1000_random.png) | ![Grid](figures/angles_to_sphere_nrot-4000_grid.png) |
+<p align="center"> <img src="figures/angles_to_sphere_nrot-1000_random.png" alt="Random" width="45%"/> <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/> </p>
 
-**Figure 1.** Sampling of rotations on the unit sphere using two schemes: (A) random, (B) grid.
+**Figure 1.** Sampling of rotation on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
 
 ---
 
