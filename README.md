@@ -210,13 +210,13 @@ Run the script as:
 - Shoemake, K. (1992). *Uniform Random Rotations*.
   [https://doi.org/10.1016/B978-0-08-050755-2.50036-1](https://doi.org/10.1016/B978-0-08-050755-2.50036-1)
 
-- Yershova, A., LaValle, S. M., & Mitchell, J. C. (2010). *Generating Uniform Incremental Grids on SO(3) Using the Hopf Fibration*.
+- Yershova, A.. (2010). *Generating Uniform Incremental Grids on SO(3) Using the Hopf Fibration*.
   [https://doi.org/10.1177/0278364909352700](https://doi.org/10.1177/0278364909352700)
   
-- Solernou, A., & Fernandez-Recio, J. (2010). *Protein docking by Rotation-Based Uniform Sampling (RotBUS) with fast computing of intermolecular contact distance and residue desolvation*.
+- Solernou, A. (2010). *Protein docking by Rotation-Based Uniform Sampling (RotBUS) with fast computing of intermolecular contact distance and residue desolvation*.
   [https://doi.org/10.1186/1471-2105-11-352](https://doi.org/10.1186/1471-2105-11-352)
 
-- Pérez-Sala, X., Igual, L., Escalera, S., & Angulo, C. (2012). *Uniform Sampling of Rotations for Discrete and Continuous Learning of 2D Shape Models*.
+- Pérez-Sala, X. (2012). *Uniform Sampling of Rotations for Discrete and Continuous Learning of 2D Shape Models*.
   [https://doi.org/10.4018/978-1-4666-2672-0.ch002](https://doi.org/10.4018/978-1-4666-2672-0.ch002)
   
   
