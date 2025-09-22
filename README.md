@@ -202,6 +202,13 @@ Run the script as:
 **Figure 4.** Histograms of the Euler angles ($\theta$, $\phi$, $\psi$) obtained from the rotated protein configurations. A nearly flat distribution (close to 0.5) indicates unbiased and uniform coverage of the rotational space.
 
 
+## References
+
+- Kuffner, J. J. (2004). *Effective sampling and distance metrics for 3D rigid body path planning*.  
+  [https://doi.org/10.1109/ROBOT.2004.1302402](https://doi.org/10.1109/ROBOT.2004.1302402)
+
+- Shoemake, K. (1992). *Uniform random rotations*. In *Graphics Gems III*, 124–132.  
+  [https://doi.org/10.1016/B978-0-08-050755-2.50034-1](https://doi.org/10.1016/B978-0-08-050755-2.50034-1)
 
 
 
