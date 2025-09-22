@@ -21,8 +21,6 @@ Example:
     python rotate_adsorbate.py --input protein.xyz --mode grid_lhs --nrot 100
 """
 
-
-
 import math
 import numpy as np
 from scipy.spatial.transform import Rotation as R
@@ -31,12 +29,40 @@ import argparse
 import sys
 import os
 
+
 # ---------------------------
 # Utilities
 # ---------------------------
 
-from scipy.spatial.transform import Rotation as R
-import numpy as np
+
+def get_cli_args():
+    parser = argparse.ArgumentParser(description="Generate rotated configurations of a molecule/protein")
+    parser.add_argument("input_file", type=str, help="XYZ input file (e.g. protein.xyz)")
+    parser.add_argument("-mode", type=str, choices=["grid", "random", "kuffner"], required=True,
+                        help="Rotation mode: grid, random, or kuffner")
+    parser.add_argument("-nrot", type=int, default=None,
+                        help="Number of rotations (for random/kuffner)")
+    parser.add_argument("-ntheta", type=int, default=None, help="Divisions in θ (grid only)")
+    parser.add_argument("-phi",    type=int, default=None, help="Divisions in φ (grid only)")
+    parser.add_argument("-psi",    type=int, default=None, help="Divisions in ψ (grid only)")
+    args = parser.parse_args()
+
+    if not os.path.isfile(args.input_file):
+        print(f"[Error]: file '{args.input_file}' was not found.")
+        sys.exit(1)
+
+    if args.mode in ("random", "kuffner"):
+        if args.nrot is None or args.nrot < 1:
+            print("[Error]: you must provide a positive -nrot for random/kuffner modes.")
+            sys.exit(1)
+
+    if args.mode == "grid":
+        if args.ntheta is None or args.phi is None or args.psi is None:
+            print("[Error]: you must provide -ntheta, -phi and -psi for grid mode.")
+            sys.exit(1)
+
+    return args
+
 
 def check_unique_rotations(triplet_list, convention=None, tol=1e-12):
     """
@@ -377,8 +403,8 @@ def adsorbate_rot(
     x, y, z : np.ndarray
         Coordinate arrays of shape (nu,).
     ntheta, nphi, npsi : int or None
-        Grid sizes for theta, phi, psi (used in 'grid' / 'grid_2' modes).
-    mode : {"grid", "grid_2", "random"}
+        Grid sizes for theta, phi, psi (used in 'grid').
+    mode : {"grid",  "random"}
         Rotation generation mode.
     nrot : int or None
         Number of random rotations (only used when mode == "random").
@@ -617,57 +643,44 @@ def adsorbate_rot(
 ########################################################
 ########################################################
 
-input_filename = input("Name of the file XYZ (ej: protein.xyz): ").strip()
+# ===== Runner =====
+args = get_cli_args()
+input_filename = args.input_file
 
-if not os.path.isfile(input_filename):
-    print(f"[Error]: file '{input_filename}' was not found.")
-    sys.exit(1)
-    
 nu, header, res, x, y, z = read_xyz_file(input_filename)
 
-mode = ask_mode()
-if mode == "random":
-    nrot_str             = input("Numer of rotations: ").strip()
-    nrot                 = int(nrot_str)
-    ntheta = nphi = npsi = None
-    xyz_output_filename  = f"{input_filename.split('.')[0]}_nrot-{nrot}_{mode}.xyz"
-
-elif mode == "kuffner":
-    nrot_str             = input("Numer of rotations: ").strip()
-    nrot                 = int(nrot_str)
-    ntheta = nphi = npsi = None
-    xyz_output_filename  = f"{input_filename.split('.')[0]}_nrot-{nrot}_{mode}.xyz"
-    
-elif mode == "grid":
-    ntheta = ask_positive_int("Number of divisions in θ: ")
-    nphi   = ask_positive_int("Number of divisions in φ: ")
-    npsi   = ask_positive_int("Number of divisions in ψ: ")
-    
-    nrot = ntheta * nphi * npsi
-    xyz_output_filename = f"{input_filename.split('.')[0]}_nrot-{nrot}_{mode}.xyz"
+if args.mode == "grid":
+    ntheta = args.ntheta
+    nphi   = args.phi
+    npsi   = args.psi
+    nrot   = ntheta * nphi * npsi
 else:
-    print('I need something')
-    exit()
+    ntheta = nphi = npsi = None
+    nrot   = args.nrot
 
-# get rotations:
-print(f"name of the protein: {input_filename.split('.')[0]}")
-nrotx = adsorbate_rot(xyz_output_filename, nu, header, res, x, y, z, ntheta, nphi, npsi, mode, nrot)
+xyz_output_filename = f"{os.path.splitext(input_filename)[0]}_nrot-{nrot}_{args.mode}.xyz"
 
-# plot:
-input_filename = 'data.dat'
-output_filename = f'angles_to_sphere_nrot-{nrot}_{mode}.png'
-angles_to_sphere_points_general(input_filename, mode, output_filename)
+print(f"name of the protein: {os.path.splitext(input_filename)[0]}")
+adsorbate_rot(
+    xyz_output_filename, nu, header, res, x, y, z,
+    ntheta, nphi, npsi, args.mode, nrot
+)
+
+# Figura de distribución sobre la esfera, usando la convención correcta por modo
+angles_to_sphere_points_general(
+    input_filename="data.dat",
+    mode=args.mode,
+    output_filename=f'angles_to_sphere_nrot-{nrot}_{args.mode}.png'
+)
+
 
 ########################################################
 # un esquema tipico en grilla es:
 # ntheta
 # nphi = 2*ntheta
 # npsi = 2*ntheta
-# 6 x 12 x 12 = 864 parecen ser las rotaciones de stefy
+# 6 x 12 x 12 = 864
 ########################################################
-
-
-
 
 
 exit()
