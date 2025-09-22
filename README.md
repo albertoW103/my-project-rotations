@@ -25,18 +25,17 @@ A Python tool to generate rotated configurations of a molecule or protein using 
 - **XYZ file**: molecular structure to be rotated (e.g., coarse-grained protein).  
 - **Mode**:
   - `grid` → sampling using midpoints (open intervals)  
-  - `grid_2` → sampling including endpoints  
-  - `random` → Haar-like random sampling  
+  - `random` → Haar-like random sampling
 - **Parameters**:  
-  - For `grid`: number of divisions (`nθ`, `nφ`, `nψ`)  
+  - For `grid`: number of divisions (`ntheta`, `nphi`, `npsi`)  
   - For `random`: total number of rotations (`nrot`)
 
 ### Outputs
 - **Files**:  
-  - Rotated configurations in an **XYZ trajectory file**  
+  - Rotated configurations in an XYZ trajectory file
   - `data.dat` containing the Euler angles ($\theta$, $\phi$, $\psi$)  
 - **Figures**:  
-  - Angle distributions (θ, φ, ψ)  
+  - Angle distributions ($\theta$, $\phi$, $\psi$)  
   - Orientation sampling on the unit sphere  
 
 
@@ -164,7 +163,7 @@ Run the script as:
 `python3 plot_histos.py 4F5S_nrot-1000_random.xyz -n1 128 -n2 363 -n3 200`
 
 - `-n1`, `-n2`, `-n3` are the atom indices (1-based) used to define the reference vectors for angle calculation.  
-- The script produces the file **`histos_angles_1x3.png`**, which contains histograms for $\cos\theta$, $\phi$, and $\psi$.
+- The script produces the file `histos_angles_1x3.png`, which contains histograms for $\cos\theta$, $\phi$, and $\psi$.
 
 ![Angle distributions](figures/histos_angles_1x3.png)
 
