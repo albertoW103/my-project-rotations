@@ -207,7 +207,7 @@ Run the script as:
 - Kuffner, J. J. (2004). *Effective sampling and distance metrics for 3D rigid body path planning*.  
   [https://doi.org/10.1109/ROBOT.2004.1302402](https://doi.org/10.1109/ROBOT.2004.1302402)
 
- Shoemake, K. (1992). *Uniform Random Rotations*. In D. Kirk (Ed.), **Graphics Gems III** (pp. 124–132). Academic Press.  
+- Shoemake, K. (1992). *Uniform Random Rotations*. In D. Kirk (Ed.), **Graphics Gems III** (pp. 124–132). Academic Press.  
   [https://doi.org/10.1016/B978-0-08-050755-2.50034-1](https://doi.org/10.1016/B978-0-08-050755-2.50034-1)
 
 - Yershova, A., LaValle, S. M., & Mitchell, J. C. (2010). *Generating Uniform Incremental Grids on SO(3) Using the Hopf Fibration*. In *Algorithmic Foundations of Robotics VIII* (pp. 385–399). Springer.  
