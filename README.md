@@ -118,7 +118,7 @@ This avoids duplication at the edges while covering the full space.
 
 ## Quick Start
 
-Run the script:
+Run the script for random mode:
 
 `python3 rotate_adsorbate.py protein.xyz -mode random -nrot 1000`
 
@@ -148,7 +148,7 @@ Below is an example for grid sampling with $n_{\theta} = 20,\; n_{\phi} = 10,\; 
 
 ![Angle distributions](figures/angles_three_nrot-4000_grid.png)
 
-**Figure 2.** Distribution of Euler angles for grid sampling ($n_{\text{rot}} = 4000$).
+**Figure 2.** Distribution of Euler angles for grid sampling $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{\phi}$ = 20, $n_{\psi}$ = 20).
 
 ---
 
@@ -162,7 +162,7 @@ Run the script as:
 
 `python3 plot_histos.py 4F5S_nrot-1000_random.xyz -n1 128 -n2 363 -n3 200`
 
-- `-n1`, `-n2`, `-n3` are the atom indices (1-based) used to define the reference vectors for angle calculation.  
+- `-n1`, `-n2`, `-n3` are the atom (or residues) indices (1-based) used to define the reference vectors for angle calculation.  
 - The script produces the file `histos_angles_1x3.png`, which contains histograms for $\cos\theta$, $\phi$, and $\psi$.
 
 ![Angle distributions](figures/histos_angles_1x3.png)
