@@ -204,7 +204,7 @@ Run the script as:
 
 ## References
 
-- Kuffner, J. J. (2004). *Effective sampling and distance metrics for 3D rigid body path planning*.  
+- Kuffner, J. J. (2004). *Effective Sampling and Distance Metrics for 3D Rigid Body Path Planning*. In *Proceedings of the 2004 IEEE International Conference on Robotics and Automation (ICRA)*, vol. 4, pp. 3993–3999. IEEE.  
   [https://doi.org/10.1109/ROBOT.2004.1302402](https://doi.org/10.1109/ROBOT.2004.1302402)
 
 - Shoemake, K. (1992). *Uniform Random Rotations*. In D. Kirk (Ed.), **Graphics Gems III** (pp. 124–132). Academic Press.  
