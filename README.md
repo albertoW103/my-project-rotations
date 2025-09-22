@@ -161,18 +161,6 @@ Below is an example for grid sampling with $n_{\theta} = 20,\; n_{\phi} = 10,\; 
 
 ---
 
-### Symmetry Considerations
-
-If the system has symmetry (e.g., around the *xy*-plane), the number of sampled angles can be reduced.  
-For example, fixing $\phi=1$ reduces the sampling space.
-
-![Symmetry example](figures/angles_to_sphere_nrot-200_grid.png)
-
-**Figure 3.** Grid sampling with $n_{\theta}=10,\; n_{\phi}=1,\; n_{\psi}=20$ ($n_{\text{rot}}=200$).
-
-
-
-
 
 
 
