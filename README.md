@@ -136,47 +136,39 @@ or, for grid mode:
 
 
 
-## Examples results
+## Example Results
 
-Figure 1 illustrates the possible outputs of the script. **Panel A** shows the distribution of orientations obtained by random sampling with $n_{\text{rot}} = 1000$. Each dot corresponds to a direction on the unit sphere, defined by the polar angle $\theta$ and the azimuthal angle $\phi$. The third Euler angle, $\psi$, follows a distribution analogous to $\phi$. The uniform spread of points across the sphere confirms isotropic sampling of orientations.
+### Random vs. Grid Sampling
 
+Both methods cover orientations uniformly, but grid produces structured sampling while random achieves isotropy.
 
-<p align="center">
-  <img src="figures/angles_to_sphere_nrot-1000_random.png" alt="Random" width="45%"/>
-  <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/>
-</p>
+| Random Sampling ($n_{\text{rot}} = 1000$) | Grid Sampling ($n_{\theta} = 10,\; n_{\phi} = 20,\; n_{\psi} = 20,\; n_{\text{rot}} = 4000$) |
+|-------------------------------------------|----------------------------------------------------------------------------------------------|
+| ![Random](figures/angles_to_sphere_nrot-1000_random.png) | ![Grid](figures/angles_to_sphere_nrot-4000_grid.png) |
 
-**Figure 1.** Sampling of rotation on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
+**Figure 1.** Sampling of rotations on the unit sphere using two schemes: (A) random, (B) grid.
 
+---
 
-On the other hand, panel B shows the distribution obtained with grid sampling, using $n_{\theta} = 20$, $n_{\phi} = 10$, and $n_{\psi} = 10$.
-The resulting points are uniformly distributed over the surface of the sphere.
+### Angle Distributions
 
+The script also generates 2D plots of the Euler angles, showing the extent and distribution of the applied rotations.  
+Below is an example for grid sampling with $n_{\theta} = 20,\; n_{\phi} = 10,\; n_{\psi} = 10$.
 
-On the other hand, the script plot the angles in 2D plot, in order to visualize the extension and distribution of the three applied angles.
-The example is shows in grid sampling with with $n_{\theta}$ = 20, $n_{\phi}$ = 10, and $n_{\psi}$ = 10.
+![Angle distributions](figures/angles_three_nrot-4000_grid.png)
 
+**Figure 2.** Distribution of Euler angles for grid sampling ($n_{\text{rot}} = 4000$).
 
-![Distribución de ángulos](figures/angles_three_nrot-4000_grid.png)
-**Figure 2.** Employed angled to rotate the protein for a grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
+---
 
+### Symmetry Considerations
 
-It shoud be noted here, that the a random samplign cover a wide range of angles than grid, however a grid sampling offer a uniform sampling,
+If the system has symmetry (e.g., around the *xy*-plane), the number of sampled angles can be reduced.  
+For example, fixing $\phi=1$ reduces the sampling space.
 
+![Symmetry example](figures/angles_to_sphere_nrot-200_grid.png)
 
-## Examples results (grid)
-
-
-If the system exhibits symmetry around one of the axes, the number of angles to sample can be reduced.  
-For example, if the system is symmetric in the *xy*-plane, it is not necessary to include rotations around the $\phi$ angle.  
-The following figure illustrates this case.
-
-<p align="center">
-  <img src="figures/angles_to_sphere_nrot-200_grid.png" alt="Angle distribution" width="40%">
-</p>
-
-**Figure 3.** Grid sampling with $n_{rot}$ = 4000 ($n_{\theta}$ = 10, $n_{\phi}$ = 1, $n_{\psi}$ = 20).
-
+**Figure 3.** Grid sampling with $n_{\theta}=10,\; n_{\phi}=1,\; n_{\psi}=20$ ($n_{\text{rot}}=200$).
 
 
 
