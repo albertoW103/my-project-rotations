@@ -7,18 +7,14 @@ rotate_adsorbate.py
 Generate rotated configurations of a molecule/protein using ZYZ Euler angles.
 Sampling modes:
 - grid      : open intervals (midpoints)
-- grid_2    : endpoints included
 - random    : Haar-like random sampling
 
 Outputs:
 - XYZ trajectory file with rotated coordinates
 - 'data.dat' with the angles used (theta, phi, psi)
 
-Dependencies:
-- numpy, scipy, matplotlib
-
 Example:
-    python rotate_adsorbate.py --input protein.xyz --mode grid_lhs --nrot 100
+    python rotate_adsorbate.py protein.xyz -mode random -nrot 1000
 """
 
 import math
@@ -38,42 +34,53 @@ import os
 def get_cli_args():
     parser = argparse.ArgumentParser(description="Generate rotated configurations of a molecule/protein")
     parser.add_argument("input_file", type=str, help="XYZ input file (e.g. protein.xyz)")
-    parser.add_argument("-mode", type=str, choices=["grid", "random", "kuffner"], required=True,
-                        help="Rotation mode: grid, random, or kuffner")
-    parser.add_argument("-nrot", type=int, default=None,
-                        help="Number of rotations (for random/kuffner)")
-    parser.add_argument("-ntheta", type=int, default=None, help="Divisions in θ (grid only)")
-    parser.add_argument("-phi",    type=int, default=None, help="Divisions in φ (grid only)")
-    parser.add_argument("-psi",    type=int, default=None, help="Divisions in ψ (grid only)")
+    parser.add_argument("-mode",      type=str, choices=["grid", "random", "kuffner"], required=True, help="Rotation mode: grid, random, or kuffner")
+    parser.add_argument("-nrot",      type=int, default=None, help="Number of rotations (for random/kuffner)")
+    parser.add_argument("-ntheta",    type=int, default=None, help="Divisions in θ (grid only)")
+    parser.add_argument("-nphi",      type=int, default=None, help="Divisions in φ (grid only)")
+    parser.add_argument("-npsi",      type=int, default=None, help="Divisions in ψ (grid only)")
     args = parser.parse_args()
-
+    
     if not os.path.isfile(args.input_file):
-        print(f"[Error]: file '{args.input_file}' was not found.")
+        print(f"[ERROR] File '{args.input_file}' was not found.")
         sys.exit(1)
-
+    
     if args.mode in ("random", "kuffner"):
         if args.nrot is None or args.nrot < 1:
-            print("[Error]: you must provide a positive -nrot for random/kuffner modes.")
+            print("[ERROR] You must provide a positive -nrot for random/kuffner modes.")
             sys.exit(1)
-
+    
     if args.mode == "grid":
-        if args.ntheta is None or args.phi is None or args.psi is None:
-            print("[Error]: you must provide -ntheta, -phi and -psi for grid mode.")
+        if args.ntheta is None or args.nphi is None or args.npsi is None:
+            print("[ERROR] You must provide -ntheta, -nphi and -npsi for grid mode.")
             sys.exit(1)
-
+    
+    # ---- Echo inputs (after validation) ----
+    print('\n............................................')
+    print(f"INPUTS:")
+    print(f"[INPUT]   input_file = {args.input_file}")
+    print(f"[INPUT]   mode       = {args.mode}")
+    if args.mode == "grid":
+        print(f"[INPUT]   ntheta     = {args.ntheta}")
+        print(f"[INPUT]   nphi       = {args.nphi}")
+        print(f"[INPUT]   npsi       = {args.npsi}")
+    else:  # random o kuffner
+        print(f"[INPUT]   nrot       = {args.nrot}")
+    print('............................................')
+    
     return args
 
 
 def check_unique_rotations(triplet_list, convention=None, tol=1e-12):
     """
-    Detecta rotaciones repetidas comparando matrices de rotación cuantizadas.
-    'triplet_list' SIEMPRE viene como (theta, phi, psi) en radianes.
-    - Si convention == "ZYZ", SciPy espera (phi, theta, psi)  -> reordenar
-    - Si convention == "ZYX", SciPy espera (yaw, pitch, roll) -> usar tal cual (theta, phi, psi)
+    Detect repeated rotations by comparing quantized rotation matrices.
+    'triplet_list' ALWAYS comes as (theta, phi, psi) in radians.
+    - If convention == "ZYZ", SciPy expects (phi, theta, psi)  -> reorder
+    - If convention == "ZYX", SciPy expects (yaw, pitch, roll) -> use (theta, phi, psi) as is
     """
     if not triplet_list:
         return 0, 0, 0, np.array([], dtype=int)
-
+    
     tps = np.asarray(triplet_list, dtype=float)  # (N, 3) con columnas (theta, phi, psi)
 
     if convention == "ZYZ":
@@ -95,34 +102,11 @@ def check_unique_rotations(triplet_list, convention=None, tol=1e-12):
     return n_total, n_unique, n_dupes, np.sort(keep_idx)
 
 
-def ask_positive_int(prompt: str) -> int:
-    """
-    Prompt until the user provides a positive integer (> 0).
-    """
-    while True:
-        try:
-            value_str = input(prompt).strip()
-            value = int(value_str)
-            if value <= 0:
-                raise ValueError("Value must be a positive integer greater than zero.")
-            return value
-        except ValueError as e:
-            print(f"[Error]: {e}. Please try again.")
-
-def ask_mode() -> str:
-    while True:
-        mode = input("Mode of rotation [grid / random / kuffner]: ").strip().lower()
-        if mode in ["random", "grid", "kuffner"]:
-            return mode
-        else:
-            print("[Error]: valid modes are: grid, random, kuffner. Please try again.")
-
-
 def count_unique_angles(angles, decimals=None):
     """
-    Cuenta valores únicos en `angles`.
-    - decimals=None: unicidad exacta de float (prácticamente será nrot).
-    - decimals=k: redondea a k decimales antes de contar (útil si querés tolerancia).
+    Count unique values in `angles`.
+    - decimals=None: exact float uniqueness (will be ~ nrot).
+    - decimals=k: round to k decimals before counting (useful as tolerance).
     """
     arr = np.asarray(angles, dtype=float)
     if decimals is not None:
@@ -196,13 +180,13 @@ def plot_three_angles(theta_list, phi_list, psi_list, filename):
 
 def get_midpoints(rmin, rmax, dimr):
     """
-    Devuelve (delta, midpoints) para 'dimr' bins iguales en el intervalo ABIERTO (rmin, rmax),
-    o sea, centros que evitan los extremos.
-
-    Comportamiento:
+    Return (delta, midpoints) for 'dimr' equal bins over the OPEN interval (rmin, rmax),
+    i.e., centers that avoid the endpoints.
+    
+    Behavior:
       - dimr <= 0 : (None, array([]))
-      - dimr == 1 : (None, array([ (rmin+rmax)/2 ]))  -> sin rango, un solo punto medio
-      - dimr >= 2 : (delta, array de midpoints)
+      - dimr == 1 : (None, array([ (rmin+rmax)/2 ]))  -> no range, single midpoint
+      - dimr >= 2 : (delta, array of midpoints)
     """
     if dimr is None or dimr <= 0:
         return None, np.array([], dtype=float)
@@ -216,7 +200,7 @@ def get_midpoints(rmin, rmax, dimr):
 
 def print_delta(label, delta, arr, denom=1.0, suffix=""):
     """
-    Imprime delta, o el punto medio si no hay rango (delta=None).
+    Print delta, or the midpoint if there is no range (delta=None).
     """
     if delta is None:
         if arr.size:
@@ -277,10 +261,10 @@ def read_xyz_file(input_filename):
 
 def angles_to_sphere_points_general(input_filename, mode, output_filename):
     """
-    Dibuja en la esfera la orientación del eje Z del cuerpo (R * ez),
-    usando la convención correcta según el modo:
-      - 'random' y 'grid'  -> ZYZ  con orden (phi, theta, psi)
-      - 'kuffner'          -> ZYX  con orden (theta, phi, psi)  (yaw, pitch, roll)
+    Plot on the unit sphere the orientation of the body Z-axis (R * ez),
+    using the appropriate convention by mode:
+      - 'random' and 'grid' -> ZYZ with order (phi, theta, psi)
+      - 'kuffner'           -> ZYX with order (theta, phi, psi) (yaw, pitch, roll)
     """
     # 1) leer ángulos
     # Extract angles from file:
@@ -345,20 +329,21 @@ def angles_to_sphere_points_general(input_filename, mode, output_filename):
     ax.set_xlim(-1,1); ax.set_ylim(-1,1); ax.set_zlim(-1,1)
     ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z")
     ax.set_title(f"Points on sphere (mode = {mode}, seq = {convention})")
-    fig.savefig(output_filename, dpi=300, bbox_inches="tight")
     plt.show()
+    fig.savefig(output_filename, dpi=300, bbox_inches="tight")
     
+
 def rota(xsv: np.ndarray,
 	 ysv: np.ndarray,
 	 zsv: np.ndarray,
 	 theta, phi, psi,
 	 mode):  # 'the most used: ZYZ'
     """
-    Aplica una rotación a las coordenadas (xsv, ysv, zsv) usando ángulos de Euler.
-    - Para mode in {'random','grid'} usa convención ZYZ (orden intrínseco): Rz(phi) · Ry(theta) · Rz(psi)
-    - Para mode == 'kuffner' usa convención ZYX (RPY/yaw–pitch–roll): Rz(theta) · Ry(phi) · Rx(psi)
-
-    Devuelve arrays rotados xrot, yrot, zrot.
+    Apply a rotation to coordinates (xsv, ysv, zsv) using Euler angles.
+    - For mode in {'random','grid'} use ZYZ (intrinsic order): Rz(phi) · Ry(theta) · Rz(psi)
+    - For mode == 'kuffner' use ZYX (RPY/yaw–pitch–roll): Rz(theta) · Ry(phi) · Rx(psi)
+    
+    Return rotated arrays xrot, yrot, zrot.
     """
     coords = np.column_stack((xsv, ysv, zsv))                              # (N,3)
     if mode in ('random', 'grid'):
@@ -440,46 +425,33 @@ def adsorbate_rot(
         # cos(theta) ∈ (-1, 1),  phi ∈ (0, 2π),  psi ∈ (0, 2π)
         ###################################################
         print('\n............................................')
-        print('method used: grid (midpoints, open intervals)')
-        print(f"grid: divisions = ntheta={ntheta}, nphi={nphi}, npsi={npsi}")
-        print('............................................\n')
+        print('ROTATION:')
+        print('[INFO] Method: grid (midpoints, open intervals)')
+        print(f"[INFO] Grid divisions: ntheta={ntheta}, nphi={nphi}, npsi={npsi}")
+        print(f"[DERIVED] nrot = ntheta*nphi*npsi = {ntheta}*{nphi}*{npsi} = {nrot}")
         
         # here, we defined the convention to use:
         convention = "ZYZ"
         
         # require all grid sizes:
         if None in (ntheta, nphi, npsi):
-            print("[grid][abort]: missing nθ/nφ/nψ")
+            print("[ERROR] [grid][abort] Missing nθ/nφ/nψ")
             return
         
         # warning if nx are < 1:
         if ntheta <= 0 or nphi <= 0 or npsi <= 0:
-            print("[grid][abort]: all nθ/nφ/nψ must be > 0")
+            print("[ERROR] [grid][abort] All nθ/nφ/nψ must be > 0")
             return
-            
-        # warning if theta sampling is too coarse:
-        if ntheta < 10:
-            print("[grid][warn ]: coarse sampling in cosθ; results may be biased")
         
-        # empty list to store angles:
-        triplet_list = []
-    
         # midpoints (open intervals):
         delta_costheta, costheta_arr = get_midpoints(-1.0, 1.0, ntheta)  # cosθ -> (-1,1)
         delta_phi, phi_arr           = get_midpoints( 0.0, 2*pi, nphi)   # φ -> (0,2π)
         delta_psi, psi_arr           = get_midpoints( 0.0, 2*pi, npsi)   # ψ -> (0,2π)
         
-        # examples:
-        # Δθ = 0.5,  midpoints: [-0.75 -0.25  0.25  0.75]
-        # Δφ =  π/2, midpoints: [π/4, 3π/4, 5π/4, 7π/4]
-        # Δψ =  π/2, midpoints: [π/4, 3π/4, 5π/4, 7π/4]
-        
-        #psi_arr = psi_arr + delta_psi/2
-        
         # Note: this is Δ(cosθ), not Δθ:
-        print_delta("Δcosθ", delta_costheta, costheta_arr)
-        print_delta("Δφ",    delta_phi,      phi_arr, math.pi, " π")
-        print_delta("Δψ",    delta_psi,      psi_arr, math.pi, " π")
+        print_delta("[DERIVED] Δcosθ", delta_costheta, costheta_arr)
+        print_delta("[DERIVED] Δφ",    delta_phi,      phi_arr, math.pi, " π")
+        print_delta("[DERIVED] Δψ",    delta_psi,      psi_arr, math.pi, " π")
         
         # to lists:
         theta_list = np.arccos(costheta_arr).tolist()
@@ -487,6 +459,7 @@ def adsorbate_rot(
         psi_list = psi_arr.tolist()
         
         # build triplets:
+        triplet_list = []
         for theta in theta_list:
             for phi in phi_list:
                 for psi in psi_list:
@@ -498,24 +471,24 @@ def adsorbate_rot(
         # θ ∈ [0, π),  φ ∈ [0, 2π),  ψ ∈ [0, 2π)
         ##########################################################
         print('\n............................................')
-        print('method used: random (Haar-like sampling)')
-        print('............................................\n')
-
+        print('ROTATION:')
+        print('[INFO] Method: random (Haar-like sampling)')
+        
         # here, we defined the convention to use:
         convention = "ZYZ"
-                
+        
+        # random number seed:        
         seed = 0
         rng  = np.random.default_rng(seed) # random number generator
-        print(f"random: RNG seed = {seed}")
+        print(f"[INFO] Random: RNG seed = {seed}")
         
         # warning if nrot < 1:
         if (nrot is None) or (nrot < 1):
-            print("[random][abort]: 'nrot' must be > 0")
+            print("[ERROR] [random][abort] 'nrot' must be > 0")
             return
         
-        # empty list to store angles:
+        # get angles:
         triplet_list = []
-        
         for _ in range(nrot):
             # get random numbers ro defined angles:
             u1, u2, u3 = rng.random(), rng.random(), rng.random()   # rng.random() in [0,1)
@@ -536,22 +509,23 @@ def adsorbate_rot(
         # Roll–Pitch–Yaw convention (θ, φ, η)
         ##########################################################
         print('\n............................................')
-        print('method used: kuffner (uniform RPY random sampling)')
-        print('............................................\n')
+        print('ROTATION:')
+        print('[INFO] Method: kuffner (uniform RPY random sampling)')
 
         # here, we defined the convention to use:
         convention = "ZYX"
-                
+        
+        # random number seed:
         seed = 0
         rng  = np.random.default_rng(seed)  # random number generator
-        print(f"kuffner: RNG seed = {seed}")
+        print(f"[INFO] Kuffner: RNG seed = {seed}")
         
         if (nrot is None) or (nrot < 1):
-            print("[kuffner][abort]: 'nrot' must be > 0")
+            print("[ERROR] [kuffner][abort] 'nrot' must be > 0")
             return
         
+        # get angles:
         triplet_list = []
-        
         for _ in range(nrot):
             # Generate random numbers:
             u1, u2, u3, u4 = rng.random(), rng.random(), rng.random(), rng.random()
@@ -573,7 +547,7 @@ def adsorbate_rot(
             triplet_list.append((theta, phi, psi))
             
     else:
-        raise ValueError("mode must be one of {'grid', 'grid_2', 'random'}.")
+        raise ValueError("[ERROR] mode must be one of {'grid', 'random', 'kuffner'}.")
     
     
     ###################################
@@ -583,20 +557,8 @@ def adsorbate_rot(
     phi_list   = [t[1] for t in triplet_list]
     psi_list   = [t[2] for t in triplet_list]
     
-        
     n_total, n_unique, n_dupes, keep_idx = check_unique_rotations(triplet_list, convention)
-    print(f"[dedup] total={n_total}, unique={n_unique}, duplicated={n_dupes}")
-    
-    # calculate lenght:
-    length = len(triplet_list)
-    unique_theta_exact = count_unique_angles(theta_list, decimals=None)
-    unique_phi_exact   = count_unique_angles(phi_list, decimals=None)
-    unique_psi_exact   = count_unique_angles(psi_list, decimals=None)
-    
-    print(f"total rotations to generate: {length}")
-    print(f"unique θ values = {unique_theta_exact}")
-    print(f"unique φ values = {unique_phi_exact}")
-    print(f"unique ψ values = {unique_psi_exact}")
+    print(f"[CHECK] Before Rotations: total={n_total}, unique={n_unique}, duplicated={n_dupes}")
     print('............................................\n')
     
     #########################################################
@@ -619,10 +581,11 @@ def adsorbate_rot(
                            f"{zrot[iu]:10.4f}\n")
             irot += 1
     
-    print('n rotations generated =', irot)
-    print(f"XYZ file saved as: {xyz_output_filename}")
-    print("angles saved in: data.dat\n")
-    print('............................................\n')
+    print('............................................')
+    print(f'OUTPUT:')
+    print(f'[OUTPUT] After Rotations = {irot}')
+    print(f"[OUTPUT] XYZ file saved as: {xyz_output_filename}")
+    print(f"[OUTPUT] Angles (θ, φ, ψ) saved in: data.dat")
     
     # visualize angles:
     filename = f"angles_three_nrot-{irot}_{mode}.png"
@@ -635,12 +598,11 @@ def adsorbate_rot(
     with open(outfile, "w") as fa:
         for theta, phi, psi in triplet_list:  # the rotation is made from triplet
             fa.write(f"{theta:.10f}  {phi:.10f}  {psi:.10f}\n")
-    print("Triplet angles saved as data.dat")
-    
+    #print("[OUTPUT] Triplet angles saved as data.dat")
+    print('............................................\n')    
 
 
 
-########################################################
 ########################################################
 
 # ===== Runner =====
@@ -651,8 +613,8 @@ nu, header, res, x, y, z = read_xyz_file(input_filename)
 
 if args.mode == "grid":
     ntheta = args.ntheta
-    nphi   = args.phi
-    npsi   = args.psi
+    nphi   = args.nphi
+    npsi   = args.npsi
     nrot   = ntheta * nphi * npsi
 else:
     ntheta = nphi = npsi = None
@@ -660,13 +622,11 @@ else:
 
 xyz_output_filename = f"{os.path.splitext(input_filename)[0]}_nrot-{nrot}_{args.mode}.xyz"
 
-print(f"name of the protein: {os.path.splitext(input_filename)[0]}")
 adsorbate_rot(
     xyz_output_filename, nu, header, res, x, y, z,
     ntheta, nphi, npsi, args.mode, nrot
 )
 
-# Figura de distribución sobre la esfera, usando la convención correcta por modo
 angles_to_sphere_points_general(
     input_filename="data.dat",
     mode=args.mode,
@@ -674,16 +634,8 @@ angles_to_sphere_points_general(
 )
 
 
-########################################################
-# un esquema tipico en grilla es:
-# ntheta
-# nphi = 2*ntheta
-# npsi = 2*ntheta
-# 6 x 12 x 12 = 864
-########################################################
 
-
-exit()
+sys.exit(0)
 
 
 
