@@ -1,51 +1,48 @@
 # rotate_adsorbate.py
 
-A Python tool to generate rotated configurations of a molecule or protein using Euler angles (ZYZ convention).  
-It supports both grid-based and random sampling and saves the rotated coordinates along with the corresponding angles.  
-This tool is useful for molecular simulations, protein orientation studies, and sampling in 3D rotational space.
 
+A Python tool to generate rotated configurations of a molecule or protein using Euler angles.  
+It supports both **grid-based** and **random sampling** and saves the rotated coordinates together with the corresponding angles.  
+This tool is useful for **molecular simulations**, **protein orientation studies**, and **sampling in 3D rotational space**.
+
+---
 
 ## Requirements
 
-- Python 3.8+  
+- Python ≥ 3.8  
 - Dependencies:
-  - `math` (standard library)  
   - `numpy`  
-  - `scipy` (specifically `scipy.spatial.transform.Rotation`)  
+  - `scipy` (`scipy.spatial.transform.Rotation`)  
   - `matplotlib`  
-  - `argparse` (standard library)  
-  - `sys` (standard library)  
-  - `os` (standard library)  
+- Standard libraries: `math`, `argparse`, `sys`, `os`
 
 
 
-
-
+---
 
 
 ## Inputs and Outputs
 
 ### Inputs
-- **XYZ file**: molecular structure to be rotated (typically coarse-grained).  
-- **Mode selection**:  
+- **XYZ file**: molecular structure to be rotated (e.g., coarse-grained protein).  
+- **Mode**:
   - `grid` → sampling using midpoints (open intervals)  
-  - `grid_2` → sampling including endpoints
+  - `grid_2` → sampling including endpoints  
   - `random` → Haar-like random sampling  
-- **Optional parameters**: number of divisions (`nθ`, `nφ`, `nψ`) or total number of rotations (`nrot`).
-
+- **Parameters**:  
+  - For `grid`: number of divisions (`nθ`, `nφ`, `nψ`)  
+  - For `random`: total number of rotations (`nrot`)
 
 ### Outputs
 - **Files**:  
-  - Rotated coordinates saved as an **XYZ trajectory**.  
-  - `data.dat` containing the Euler angles ($\theta$, $\phi$, $\psi$) used.  
-
-- **Figures** (generated automatically):  
-  - Angle distributions ($\theta$, $\phi$, $\psi$).  
-  - Sampling preview of orientations on the unit sphere.  
-
+  - Rotated configurations in an **XYZ trajectory file**  
+  - `data.dat` containing the Euler angles ($\theta$, $\phi$, $\psi$)  
+- **Figures**:  
+  - Angle distributions (θ, φ, ψ)  
+  - Orientation sampling on the unit sphere  
 
 
-
+---
 
 
 
@@ -93,56 +90,44 @@ $$
 \end{aligned}
 $$
 
+---
 
-Now, we implement three different ways to calculate the angles:
 
-### Random
-
-In the range distribution, the generation of random numbers in Python uses rng.random(), which produces values in the interval [0,1).
-Consequently, when mapping these values to angles, the upper bounds are never included.
-The ranges:
+### Random Sampling
+Using `rng.random() ∈ [0,1)`, the mapped ranges are:
 
 $$
-\begin{aligned}
-\cos \theta &\in [-1, 1) \\
-\phi &\in [0, 2\pi) \\
-\psi &\in [0, 2\pi)
-\end{aligned}
+\cos \theta \in [-1, 1), \quad
+\phi \in [0, 2\pi), \quad
+\psi \in [0, 2\pi)
 $$
 
-On $\cos \theta$ rotation at $\cos \theta$ = 0 is cero.
-On the other hand, on $\phi$ and $\psi$ rotation at 2$pi$ is also cero, avoing rotation repetion with angles at 0.
+- Values at the upper bound are excluded (no repetition with 0).  
+- Ensures isotropic and unbiased orientation sampling.
 
-
-
-### Pseudocode
-
-
-
-### Grid
-
-With this mode, the range are the following:
+### Grid Sampling
+Midpoints of open intervals:
 
 $$
-\begin{aligned}
-\cos \theta &\in (-1, 1) \\
-\phi &\in (0, 2\pi) \\
-\psi &\in (0, 2\pi)
-\end{aligned}
+\cos \theta \in (-1, 1), \quad
+\phi \in (0, 2\pi), \quad
+\psi \in (0, 2\pi)
 $$
 
+This avoids duplication at the edges while covering the full space.
 
-## Quick start
+---
+
+
+## Quick Start
 
 Run the script:
 
-`python3 rotate_adsorbate.py`
+`python3 rotate_adsorbate.py protein.xyz -mode random -nrot 1000`
 
-The script will ask for:
-- protein name: $\textit{e.g.}$ protein.xyz  (coarce-grained of a protein in this version)
-- mode: $\textit{e.g.}$ `random` or `grid` (more models can be seted)
-- `nrot` for random or (`nθ`, `nφ`, `nψ`) for grid
+or, for grid mode:
 
+`python3 rotate_adsorbate.py protein.xyz -mode grid -ntheta 10 -nphi 20 -npsi 20`
 
 
 
@@ -151,8 +136,7 @@ The script will ask for:
 
 
 
-
-## Examples results (random and grid)
+## Examples results
 
 Figure 1 illustrates the possible outputs of the script. **Panel A** shows the distribution of orientations obtained by random sampling with $n_{\text{rot}} = 1000$. Each dot corresponds to a direction on the unit sphere, defined by the polar angle $\theta$ and the azimuthal angle $\phi$. The third Euler angle, $\psi$, follows a distribution analogous to $\phi$. The uniform spread of points across the sphere confirms isotropic sampling of orientations.
 
