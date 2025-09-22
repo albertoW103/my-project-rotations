@@ -151,9 +151,9 @@ def plot_angles_1x3(costheta_list, phi_list, psi_list, output_filename):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot histograms of Euler angles from rotated XYZ.")
     parser.add_argument("input_file", type=str, help="Input multi-frame XYZ file (e.g., 4F5S_nrot-1000_random.xyz)")
-    parser.add_argument("--n1", type=int, default=128, help="Index of atom 1 (1-based)")
-    parser.add_argument("--n2", type=int, default=363, help="Index of atom 2 (1-based)")
-    parser.add_argument("--n3", type=int, default=200, help="Index of atom 3 (1-based)")
+    parser.add_argument("-n1", type=int, default=128, help="Index of atom 1 (1-based)")
+    parser.add_argument("-n2", type=int, default=363, help="Index of atom 2 (1-based)")
+    parser.add_argument("-n3", type=int, default=200, help="Index of atom 3 (1-based)")
     args = parser.parse_args()
 
     frames = get_blocks_proteins(args.input_file)

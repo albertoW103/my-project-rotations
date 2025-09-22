@@ -168,9 +168,9 @@ This allows verifying whether the generated sampling covers the expected ranges 
 
 Run the script as:
 
-`python3 plot_histos.py 4F5S_nrot-1000_random.xyz --n1 128 --n2 363 --n3 200`
+`python3 plot_histos.py 4F5S_nrot-1000_random.xyz -n1 128 -n2 363 -n3 200`
 
-- `--n1`, `--n2`, `--n3` are the atom indices (1-based) used to define the reference vectors for angle calculation.  
+- `-n1`, `-n2`, `-n3` are the atom indices (1-based) used to define the reference vectors for angle calculation.  
 - The script produces the file **`histos_angles_1x3.png`**, which contains histograms for $\cos\theta$, $\phi$, and $\psi$.
 
 ![Angle distributions](figures/histos_angles_1x3.png)
