@@ -168,12 +168,23 @@ Below is an example for grid sampling with $n_{\theta} = 20,\; n_{\phi} = 10,\; 
 Using the auxiliary script `plot_histos.py`, the angles $n_{\theta}$, $n_{\phi}$, and $n_{\psi}$ can be recalculated from the rotated configurations.  
 This allows checking whether the generated sampling covers the expected ranges uniformly.
 
-![Angle distributions](figures/histos_angles_1x3.png)
+### How it works
 
-**Figure 4.** Histograms of the Euler angles ($\theta$, $\phi$, $\psi$) obtained from the rotated protein configurations.
+The script reads a multi-frame XYZ file (generated with `rotate_adsorbate.py`) and calculates the Euler angles from three reference atoms (`n1`, `n2`, `n3`).  
+It then plots histograms for:
 
-This analysis helps to assess whether the number of sampled rotations is sufficient for the system under study.  
-Ideally, each histogram should approach a flat distribution (close to 0.5), indicating unbiased and uniform coverage of the rotational space.
+- $\cos\theta$ in the range $[-1, 1]$  
+- $\phi/\pi$ in the range $[-1, 1]$  
+- $\psi/\pi$ in the range $[-1, 1]$  
 
+An ideal uniform sampling produces flat distributions with density close to 0.5.
+
+### Example usage
+
+# Basic usage with default reference atoms (n1=128, n2=363, n3=200)
+`python3 plot_histos.py 4F5S_nrot-1000_random.xyz`
+
+# Custom reference atoms and number of bins
+`python3 plot_histos.py 4F5S_nrot-4000_grid.xyz --n1 50 --n2 120 --n3 200 --bins 100`
 
 
