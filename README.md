@@ -144,7 +144,7 @@ Both methods cover orientations uniformly, but grid produces structured sampling
 
 <p align="center"> <img src="figures/angles_to_sphere_nrot-1000_random.png" alt="Random" width="45%"/> <img src="figures/angles_to_sphere_nrot-4000_grid.png" alt="Grid" width="45%"/> </p>
 
-**Figure 1.** Sampling of rotation on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{psi}$ = 20, $n_{\psi}$ = 20).
+**Figure 1.** Sampling of rotation on the unit sphere using two schemes: (A) random sampling with $n_{\text{rot}} = 1000$, and (B) grid sampling with $n_{\text{rot}} = 4000$ ($n_{\theta}$ = 10, $n_{\phi}$ = 20, $n_{\psi}$ = 20).
 
 ---
 
@@ -163,21 +163,17 @@ Below is an example for grid sampling with $n_{\theta} = 20,\; n_{\phi} = 10,\; 
 
 
 
-## Optional
+## Optional: Histogram Analysis
 
-
-Additionally, using the script `plot_histo_v6.py` applied to the rotated protein file,  
-we can calculate $n_{\theta}$, $n_{\phi}$, and $n_{\psi}$ for each generated configuration.  
-The figure below shows the distribution of these angle values in a histogram representation.
-
+Using the auxiliary script `plot_histos.py`, the angles $n_{\theta}$, $n_{\phi}$, and $n_{\psi}$ can be recalculated from the rotated configurations.  
+This allows checking whether the generated sampling covers the expected ranges uniformly.
 
 ![Angle distributions](figures/histos_angles_1x3.png)
-**Figure 4.** Calculated angles from rotate protein.
 
+**Figure 4.** Histograms of the Euler angles ($\theta$, $\phi$, $\psi$) obtained from the rotated protein configurations.
 
-This representation helps determine the sufficient number of rotations required for the system under investigation.  
-Ideally, the distribution should be close to 0.5 for each configuration.
-
+This analysis helps to assess whether the number of sampled rotations is sufficient for the system under study.  
+Ideally, each histogram should approach a flat distribution (close to 0.5), indicating unbiased and uniform coverage of the rotational space.
 
 
 
