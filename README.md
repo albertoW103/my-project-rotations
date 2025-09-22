@@ -1,9 +1,7 @@
 # rotate_adsorbate.py
 
 
-A Python tool to generate rotated configurations of a molecule or protein using Euler angles.  
-It supports both **grid-based** and **random sampling** and saves the rotated coordinates together with the corresponding angles.  
-This tool is useful for **molecular simulations**, **protein orientation studies**, and **sampling in 3D rotational space**.
+A Python tool to generate rotated configurations of a molecule or protein using Euler angles. It supports both grid-based and random sampling and saves the rotated coordinates together with the corresponding angles. This tool is useful for molecular simulations, protein orientation studies, and sampling in 3D rotational space.
 
 ---
 
@@ -132,10 +130,6 @@ or, for grid mode:
 
 
 
-
-
-
-
 ## Example Results
 
 ### Random vs. Grid Sampling
@@ -163,8 +157,7 @@ Below is an example for grid sampling with $n_{\theta} = 20,\; n_{\phi} = 10,\; 
 
 ## Optional: Histogram Analysis
 
-Using the auxiliary script `plot_histos.py`, the Euler angles can be recalculated from the rotated XYZ file.  
-This allows verifying whether the generated sampling covers the expected ranges uniformly.
+Using the auxiliary script `plot_histos.py`, the Euler angles can be recalculated from the rotated XYZ file. This allows verifying whether the generated sampling covers the expected ranges uniformly.
 
 Run the script as:
 
@@ -175,8 +168,7 @@ Run the script as:
 
 ![Angle distributions](figures/histos_angles_1x3.png)
 
-**Figure 4.** Histograms of the Euler angles ($\theta$, $\phi$, $\psi$) obtained from the rotated protein configurations.  
-A nearly flat distribution (close to 0.5) indicates unbiased and uniform coverage of the rotational space.
+**Figure 4.** Histograms of the Euler angles ($\theta$, $\phi$, $\psi$) obtained from the rotated protein configurations. A nearly flat distribution (close to 0.5) indicates unbiased and uniform coverage of the rotational space.
 
 
 
